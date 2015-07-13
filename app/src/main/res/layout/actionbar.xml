@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/actionbar_height"
+    android:background="@color/themecolor">
+
+    <RelativeLayout
+        android:id="@+id/buttonLeft"
+        android:layout_width="@dimen/actionbar_height"
+        android:layout_height="match_parent"
+        android:background="@drawable/selector_press_themecolor_icon"
+        android:clickable="true">
+
+        <ImageView
+            android:id="@+id/buttonLeftIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:src="@drawable/icon_back" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/separator"
+        android:layout_width="1dp"
+        android:layout_height="18dp"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@+id/buttonLeft"
+        android:background="#60ffffff"></RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_toRightOf="@+id/separator"
+        android:background="@color/themecolor">
+
+        <TextView
+            android:id="@+id/labelName"
+            style="@style/style_label_actionbar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TITLE" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/buttonRight"
+        android:layout_width="@dimen/actionbar_height"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
+        android:background="@drawable/selector_press_themecolor_icon"
+        android:clickable="true">
+
+        <ImageView
+            android:id="@+id/buttonRightIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:src="@drawable/icon_option" />
+    </RelativeLayout>
+</RelativeLayout>
