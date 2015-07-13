@@ -1,0 +1,31 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+    </style>
+
+    <color name="themecolor">#135587</color>
+    <color name="themecolor_pressed">#0e3c5e</color>
+    <color name="themebackgroundcolor">#ffffff</color>
+    <color name="usernamecolor">#095287</color>
+    <color name="themecamera">#26272c</color>
+    <color name="themecamera_pressed">#18191b</color>
+    <color name="black">#000000</color>
+
+    <style name="style_count_post_folows_text">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_centerHorizontal">true</item>
+        <item name="android:textColor">#45484d</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">20dp</item>
+    </style>
+
+    <style name="style_under_count_post_folows_text">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_centerHorizontal">true</item>
+        <item name="android:textColor">#acacae</item>
+    </style>
+</resources>

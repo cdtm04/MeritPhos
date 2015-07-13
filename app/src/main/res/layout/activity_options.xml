@@ -1,0 +1,378 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/themebackgroundcolor"
+    tools:context="com.merit.myapplication.activities.ActivityOptions">
+
+    <RelativeLayout
+        android:id="@+id/relative1"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/actionbar_height">
+
+        <RelativeLayout
+            android:id="@+id/btnBack"
+            android:layout_width="@dimen/actionbar_height"
+            android:layout_height="match_parent"
+            android:background="@drawable/selector_press_themecolor_icon"
+            android:clickable="true">
+
+            <ImageView
+                android:id="@+id/imageView3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:background="@drawable/shape_border_back_icon"
+                android:src="@drawable/icon_back" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_toLeftOf="@+id/btnDirect"
+            android:layout_toRightOf="@+id/btnBack"
+            android:background="@color/themecolor">
+
+            <TextView
+                style="@style/style_label_actionbar"
+                android:text="@string/OPTIONS" />
+        </RelativeLayout>
+    </RelativeLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/relative1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    style="@style/style_label_option"
+                    android:text="@string/FOLLOWPEOPLE" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/btnFacebookFriendsOption"
+                style="@style/style_button_option">
+
+                <TextView
+                    android:id="@+id/tvFacebookFriends"
+                    style="@style/style_content_option"
+                    android:text="@string/FacebookFriends" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignRight="@+id/tvFacebookFriends"
+                    android:layout_centerVertical="true"
+                    android:paddingRight="12dp"
+                    android:src="@drawable/icon_facebook_small" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/btnFindContactsOption"
+                style="@style/style_button_option">
+
+                <TextView
+                    android:id="@+id/tvFindContacts"
+                    style="@style/style_content_option"
+                    android:text="@string/FindContacts" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignRight="@+id/tvFindContacts"
+                    android:layout_centerVertical="true"
+                    android:paddingRight="12dp"
+                    android:src="@drawable/icon_contacts_small" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/btnInviteFriendsOption"
+                style="@style/style_button_option">
+
+                <TextView
+                    android:id="@+id/tvInviteFriends"
+                    style="@style/style_content_option"
+                    android:text="@string/InviteFriends" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    style="@style/style_label_option"
+                    android:text="@string/ACCOUNT" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/btnEditProfileOption"
+                style="@style/style_button_option">
+
+                <TextView
+                    style="@style/style_content_option"
+                    android:text="@string/Editprofile" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/btnChangePasswordOption"
+                style="@style/style_button_option">
+
+                <TextView
+                    style="@style/style_content_option"
+                    android:text="@string/ChangePassword" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/btnPostsYouveLikedOption"
+                style="@style/style_button_option">
+
+                <TextView
+                    style="@style/style_content_option"
+                    android:text="@string/PostsYouveLiked" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/btnPrivateAccountOption"
+                style="@style/style_button_option"
+                android:background="@color/themebackgroundcolor">
+
+                <TextView
+                    android:id="@+id/tvPrivateAccountOption"
+                    style="@style/style_content_option"
+                    android:text="@string/PrivateAccount" />
+
+                <RelativeLayout
+                    android:id="@+id/IconPrivateAccountOption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignRight="@+id/tvPrivateAccountOption"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="12dp"
+                    android:background="@drawable/button_slide_option_off" />
+            </RelativeLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="25dp"
+                android:paddingRight="30dp"
+                android:paddingTop="8dp"
+                android:text="@string/Whenyouraccountisprivate"
+                android:textColor="#a9a9a9" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    style="@style/style_label_option"
+                    android:text="@string/SETTINGS" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/btnLinkedAccountsOption"
+                style="@style/style_button_option">
+
+                <TextView
+                    style="@style/style_content_option"
+                    android:text="@string/LinkedAccounts" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/btnPushNotificationsOption"
+                style="@style/style_button_option">
+
+                <TextView
+                    style="@style/style_content_option"
+                    android:text="@string/PushNotifications" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/btnCameraOption"
+                style="@style/style_button_option">
+
+                <TextView
+                    style="@style/style_content_option"
+                    android:text="@string/Camera" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/btnCellularDataUseOption"
+                style="@style/style_button_option">
+
+                <TextView
+                    style="@style/style_content_option"
+                    android:text="@string/CellularDataUse" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/btnSaveOriginalPhotosOption"
+                style="@style/style_button_option"
+                android:background="@color/themebackgroundcolor">
+
+                <TextView
+                    android:id="@+id/tvSaveOriginalPhotosOption"
+                    style="@style/style_content_option"
+                    android:text="@string/SaveOriginalPhotos" />
+
+                <RelativeLayout
+                    android:id="@+id/IconSaveOriginalPhotosOption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignRight="@+id/tvSaveOriginalPhotosOption"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="12dp"
+                    android:background="@drawable/button_slide_option_off" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/btnSaveVideosAfterPostingOption"
+                style="@style/style_button_option"
+                android:background="@color/themebackgroundcolor">
+
+                <TextView
+                    android:id="@+id/tvSaveVideosAfterPostingOption"
+                    style="@style/style_content_option"
+                    android:text="@string/SaveVideosAfterPosting" />
+
+                <RelativeLayout
+                    android:id="@+id/IconSaveVideosAfterPostingOption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignRight="@+id/tvSaveVideosAfterPostingOption"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="12dp"
+                    android:background="@drawable/button_slide_option_off" />
+            </RelativeLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="25dp"
+                android:paddingRight="30dp"
+                android:paddingTop="8dp"
+                android:text="@string/Savingvideostoyourphone"
+                android:textColor="#a9a9a9" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    style="@style/style_label_option"
+                    android:text="@string/SUPPORT" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/btnInstagramHelpCenterOption"
+                style="@style/style_button_option">
+
+                <TextView
+                    style="@style/style_content_option"
+                    android:text="@string/InstagramHelpCenter" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/btnReportaProblemOption"
+                style="@style/style_button_option">
+
+                <TextView
+                    style="@style/style_content_option"
+                    android:text="@string/ReportaProblem" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    style="@style/style_label_option"
+                    android:text="@string/ABOUT" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/btnAdsOption"
+                style="@style/style_button_option">
+
+                <TextView
+                    style="@style/style_content_option"
+                    android:text="@string/Ads" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/btnBlogOption"
+                style="@style/style_button_option">
+
+                <TextView
+                    style="@style/style_content_option"
+                    android:text="@string/Blog" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/btnPrivacyPolicyOption"
+                style="@style/style_button_option">
+
+                <TextView
+                    style="@style/style_content_option"
+                    android:text="@string/PrivacyPolicy" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/btnTermsofServiceOption"
+                style="@style/style_button_option">
+
+                <TextView
+                    style="@style/style_content_option"
+                    android:text="@string/TermsofService" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/btnOpenSourceLibrariesOption"
+                style="@style/style_button_option">
+
+                <TextView
+                    style="@style/style_content_option"
+                    android:text="@string/OpenSourceLibraries" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    style="@style/style_label_option"
+                    android:paddingTop="10dp"
+                    android:text="" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/btnClearSearchHistoryOption"
+                style="@style/style_button_option">
+
+                <TextView
+                    style="@style/style_content_option"
+                    android:text="@string/ClearSearchHistory" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/btnLogOutOption"
+                style="@style/style_button_option"
+                android:layout_marginBottom="15dp">
+
+                <TextView
+                    style="@style/style_content_option"
+                    android:text="@string/LogOut" />
+            </RelativeLayout>
+        </LinearLayout>
+    </ScrollView>
+</RelativeLayout>

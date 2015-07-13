@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="60dp"
+    android:background="@color/themebackgroundcolor"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/btnAccount"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_toLeftOf="@+id/tvPostedTime"
+        android:clickable="true">
+
+        <com.merit.myapplication.moduls.CircleImageView
+            android:id="@+id/ivAvatar"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="13dp"
+            android:src="@drawable/picture" />
+
+        <TextView
+            android:id="@+id/tvUsername"
+            style="@style/style_username_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@+id/ivAvatar"
+            android:text="ash" />
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/tvPostedTime"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
+        android:gravity="center_vertical"
+        android:paddingRight="13dp"
+        android:text="4h"
+        android:textColor="#a3a3a3" />
+
+</RelativeLayout>

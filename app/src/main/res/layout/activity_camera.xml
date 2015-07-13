@@ -1,0 +1,54 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/themecamera"
+    tools:context="com.merit.myapplication.activities.ActivityCamera">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/tabs"
+        android:clickable="false"
+        android:orientation="vertical">
+
+        <com.merit.myapplication.moduls.ActionBar
+            android:id="@+id/abCamera"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"></com.merit.myapplication.moduls.ActionBar>
+
+        <FrameLayout
+            android:id="@+id/loCamera"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#000000"></FrameLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clickable="false">
+
+            <ImageView
+                android:id="@+id/btnCamera"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:clickable="true"
+                android:src="@drawable/button_snap" />
+        </RelativeLayout>
+    </LinearLayout>
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/pager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clickable="false"></android.support.v4.view.ViewPager>
+
+    <com.merit.myapplication.moduls.SlidingTabLayout
+        android:id="@+id/tabs"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/themecamera"></com.merit.myapplication.moduls.SlidingTabLayout>
+</RelativeLayout>

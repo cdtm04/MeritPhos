@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        jar="/home/merit/Projects_Android/MeritPhos/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/22.2.0/jars/classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="73753982da6bde518f3a4c6b372749981d14d1a0">
+        <dex dex="/home/merit/Projects_Android/MeritPhos/app/build/intermediates/pre-dexed/debug/classes-0c410398290c3cd6bf676b9bb942a99bb9d58453.jar" />
+    </item>
+    <item
+        jar="/home/merit/Projects_Android/MeritPhos/app/build/intermediates/exploded-aar/com.android.support/support-v4/22.2.0/jars/classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="1ee588ff2c4daf7b97c1cbf922a6c7f027285c2f">
+        <dex dex="/home/merit/Projects_Android/MeritPhos/app/build/intermediates/pre-dexed/debug/classes-5aad9053635b1037b9e11c1b6b2b611e95aeeb8f.jar" />
+    </item>
+    <item
+        jar="/home/merit/Projects_Android/MeritPhos/app/build/intermediates/exploded-aar/com.android.support/support-v4/22.2.0/jars/libs/internal_impl-22.2.0.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="57f2ab85c164ff1676ec64dee787981c046fab79">
+        <dex dex="/home/merit/Projects_Android/MeritPhos/app/build/intermediates/pre-dexed/debug/internal_impl-22.2.0-75ae2280db65fd53e749d7882b1f1f5cf373e4db.jar" />
+    </item>
+    <item
+        jar="/home/merit/Projects_Android/MeritPhos/app/build/intermediates/exploded-aar/se.emilsjolander/stickylistheaders/2.7.0/jars/classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="3bdf77dbe58e0ec53a0178de532372e7c00859b9">
+        <dex dex="/home/merit/Projects_Android/MeritPhos/app/build/intermediates/pre-dexed/debug/classes-74c98a88c80e479fb0636f7e9131fc2f40f91db7.jar" />
+    </item>
+    <item
+        jar="/home/merit/Android/Sdk/extras/android/m2repository/com/android/support/support-annotations/22.2.0/support-annotations-22.2.0.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="66b42a1f3eb7676070b7ef7f14b603483aecbee1">
+        <dex dex="/home/merit/Projects_Android/MeritPhos/app/build/intermediates/pre-dexed/debug/support-annotations-22.2.0-c9c4ddd91cd189473090f416174fd8f8e64feed5.jar" />
+    </item>
+
+</items>

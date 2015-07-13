@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/themebackgroundcolor"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:background="#ffffff">
+
+            <com.merit.myapplication.moduls.CircleImageView
+                android:id="@+id/ivAvatarProfile"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:clickable="true"
+                android:src="@drawable/emptypic" />
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="15dp"
+                android:layout_toRightOf="@+id/ivAvatarProfile">
+
+                <LinearLayout
+                    android:id="@+id/linear"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:orientation="horizontal"
+                    android:weightSum="3">
+
+                    <RelativeLayout
+                        android:id="@+id/btnCountPosts"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:clickable="true">
+
+                        <TextView
+                            android:id="@+id/tvCountPosts"
+                            style="@style/style_count_post_folows_text"
+                            android:text="15" />
+
+                        <TextView
+                            style="@style/style_under_count_post_folows_text"
+                            android:layout_below="@+id/tvCountPosts"
+                            android:text="@string/posts" />
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:id="@+id/btnCountFollwers"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:clickable="true">
+
+                        <TextView
+                            android:id="@+id/tvCountFollowers"
+                            style="@style/style_count_post_folows_text"
+                            android:text="1000" />
+
+                        <TextView
+                            style="@style/style_under_count_post_folows_text"
+                            android:layout_below="@+id/tvCountFollowers"
+                            android:text="@string/followers" />
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:id="@+id/btnCountFollowing"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:clickable="true">
+
+                        <TextView
+                            android:id="@+id/tvCountFollowing"
+                            style="@style/style_count_post_folows_text"
+                            android:text="15" />
+
+                        <TextView
+                            style="@style/style_under_count_post_folows_text"
+                            android:layout_below="@+id/tvCountFollowing"
+                            android:text="@string/following" />
+                    </RelativeLayout>
+
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/btnEditProfile"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_below="@+id/linear"
+                    android:text="@string/EditYourProfile"
+                    android:textSize="12dp" />
+            </RelativeLayout>
+        </RelativeLayout>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="20dp"
+        android:paddingLeft="20dp">
+
+        <TextView
+            android:id="@+id/tvFullNameProfile"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Merit Ú Nù"
+            android:textColor="#45484d"
+            android:textSize="15dp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvBioProfile"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tvFullNameProfile"
+            android:text="So tired"
+            android:textColor="#000000" />
+
+        <TextView
+            android:id="@+id/tvLinkProfile"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tvBioProfile"
+            android:autoLink="web"
+            android:text="fb.com/meritunu"
+            android:textColor="#438ecf"
+            android:textColorLink="#438ecf" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="#d0d0d0"></RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal"
+        android:weightSum="4">
+
+        <ImageView
+            android:id="@+id/btnGridViewMedia"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:padding="13dp"
+            android:src="@drawable/button_photo_gridview_profile" />
+
+        <ImageView
+            android:id="@+id/btnListViewMedia"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:padding="13dp"
+            android:src="@drawable/button_photo_listview_profile_click" />
+
+        <ImageView
+            android:id="@+id/btnMapMedia"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:padding="13dp"
+            android:src="@drawable/selector_mapmedia" />
+
+        <ImageView
+            android:id="@+id/btnTagMedia"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:padding="13dp"
+            android:src="@drawable/selector_tagmedia" />
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="#d0d0d0"></RelativeLayout>
+
+</LinearLayout>
