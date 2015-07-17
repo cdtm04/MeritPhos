@@ -15,8 +15,8 @@ public class Location {
     }
 
     public Location() {
-        this.id = null;
-        this.name = null;
+        this.id = "";
+        this.name = "";
         this.latitude = 0;
         this.longitude = 0;
     }
