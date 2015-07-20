@@ -504,9 +504,9 @@ public class ListViewActivityAccountAdapter extends BaseAdapter implements Stick
             Intent iOpenRelationship = new Intent(mContext, ActivityRelationship.class);
             iOpenRelationship.putExtra("LABELNAME", InstagramApp.GET_LIKED_USERS);
             iOpenRelationship.putExtra("ID", mPostedMediaItem.getId());
-            iOpenRelationship.putExtra("PARENT", "AccountActivity");
-            View view = ActivityHomeGroup.groupHomeGroup.getLocalActivityManager().startActivity("ActivityRelationship", iOpenRelationship.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)).getDecorView();
-            ActivityHomeGroup.groupHomeGroup.replaceView(view);
+            iOpenRelationship.putExtra(MainActivity.PARENT, MainActivity.PARENT_ACCOUNT);
+            View view = ActivityAccountGroup.groupAccountGroup.getLocalActivityManager().startActivity("ActivityRelationship", iOpenRelationship.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)).getDecorView();
+            ActivityAccountGroup.groupAccountGroup.replaceView(view);
 
             //Toast.makeText(mContext, "tvCountLikes " + position + " of user " + mPostedMediaItem.getUserOfPost().getUserName() + " is clicked", Toast.LENGTH_SHORT).show();
         }
@@ -522,15 +522,8 @@ public class ListViewActivityAccountAdapter extends BaseAdapter implements Stick
         private void btnCommentEvent() {
             // TO DO WHEN CLICK btnComment HERE
             Intent intent = new Intent(mContext, ActivityComment.class);
-            intent.putExtra(MainActivity.PARENT, MainActivity.PARENT_ACCOUNT);
-            intent.putExtra("MEDIAID", mPostedMediaItem.getId());
-            intent.putExtra("USERNAME", mPostedMediaItem.getUserOfPost().getUserName());
-            intent.putExtra("USERID", mPostedMediaItem.getUserOfPost().getId());
-            intent.putExtra("AVATAR", mPostedMediaItem.getUserOfPost().getProfilePicture());
-            if (mPostedMediaItem.getCaptionOfPost() != null) {
-                intent.putExtra("TEXT", mPostedMediaItem.getCaptionOfPost().getTextOfCaption());
-                intent.putExtra("TIME", mPostedMediaItem.getCaptionOfPost().getCreatedTimeOfCaption());
-            }
+            intent.putExtra("MPOST", mPostedMediaItem);
+            intent.putExtra(MainActivity.PARENT, MainActivity.PARENT_HOME);
             mContext.startActivity(intent);
             //Toast.makeText(mContext, "btnComment " + position + " of user " + mPostedMediaItem.getUserOfPost().getUserName() + " is clicked", Toast.LENGTH_SHORT).show();
         }

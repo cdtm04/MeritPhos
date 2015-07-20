@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -26,6 +27,7 @@ import com.merit.myapplication.instagram.InstagramApp;
 import com.merit.myapplication.loaddata.ImageLoader;
 import com.merit.myapplication.models.Post;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
@@ -236,15 +238,8 @@ public class ListViewActivityHomeAdapter extends BaseAdapter implements StickyLi
                 //Toast.makeText(mContext, "tvComments " + position + " of user " + link + " is clicked on link", Toast.LENGTH_SHORT).show();
             } else {
                 Intent intent = new Intent(mContext, ActivityComment.class);
+                intent.putExtra("MPOST", mPostedMediaItem);
                 intent.putExtra(MainActivity.PARENT, MainActivity.PARENT_HOME);
-                intent.putExtra("MEDIAID", mPostedMediaItem.getId());
-                intent.putExtra("USERNAME", mPostedMediaItem.getUserOfPost().getUserName());
-                intent.putExtra("USERID", mPostedMediaItem.getUserOfPost().getId());
-                intent.putExtra("AVATAR", mPostedMediaItem.getUserOfPost().getProfilePicture());
-                if (mPostedMediaItem.getCaptionOfPost() != null) {
-                    intent.putExtra("TEXT", mPostedMediaItem.getCaptionOfPost().getTextOfCaption());
-                    intent.putExtra("TIME", mPostedMediaItem.getCaptionOfPost().getCreatedTimeOfCaption());
-                }
                 mContext.startActivity(intent);
 
                 //Toast.makeText(mContext, "tvComments " + position + " of user " + link + " is clicked on text", Toast.LENGTH_SHORT).show();
@@ -258,7 +253,7 @@ public class ListViewActivityHomeAdapter extends BaseAdapter implements StickyLi
             Intent iOpenRelationship = new Intent(mContext, ActivityRelationship.class);
             iOpenRelationship.putExtra("LABELNAME", InstagramApp.GET_LIKED_USERS);
             iOpenRelationship.putExtra("ID", mPostedMediaItem.getId());
-            iOpenRelationship.putExtra("PARENT", "HomeActivity");
+            iOpenRelationship.putExtra(MainActivity.PARENT, MainActivity.PARENT_HOME);
             View view = ActivityHomeGroup.groupHomeGroup.getLocalActivityManager().startActivity("ActivityRelationship", iOpenRelationship.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)).getDecorView();
             ActivityHomeGroup.groupHomeGroup.replaceView(view);
             // Toast.makeText(mContext, "tvCountLikes " + position + " of user " + mPostedMediaItem.getUserOfPost().getUserName() + " is clicked", Toast.LENGTH_SHORT).show();
@@ -276,15 +271,8 @@ public class ListViewActivityHomeAdapter extends BaseAdapter implements StickyLi
         private void btnCommentEvent() {
             // TO DO WHEN CLICK btnComment HERE
             Intent intent = new Intent(mContext, ActivityComment.class);
+            intent.putExtra("MPOST", mPostedMediaItem);
             intent.putExtra(MainActivity.PARENT, MainActivity.PARENT_HOME);
-            intent.putExtra("MEDIAID", mPostedMediaItem.getId());
-            intent.putExtra("USERNAME", mPostedMediaItem.getUserOfPost().getUserName());
-            intent.putExtra("USERID", mPostedMediaItem.getUserOfPost().getId());
-            intent.putExtra("AVATAR", mPostedMediaItem.getUserOfPost().getProfilePicture());
-            if (mPostedMediaItem.getCaptionOfPost() != null) {
-                intent.putExtra("TEXT", mPostedMediaItem.getCaptionOfPost().getTextOfCaption());
-                intent.putExtra("TIME", mPostedMediaItem.getCaptionOfPost().getCreatedTimeOfCaption());
-            }
             mContext.startActivity(intent);
             //Toast.makeText(mContext, "btnComment " + position + " of user " + mPostedMediaItem.getUserOfPost().getUserName() + " is clicked", Toast.LENGTH_SHORT).show();
         }

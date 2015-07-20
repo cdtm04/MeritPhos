@@ -1,9 +1,11 @@
 package com.merit.myapplication.models;
 
+import java.io.Serializable;
+
 /**
  * Created by merit on 7/13/2015.
  */
-public class Location {
+public class Location implements Serializable {
     String id, name;
     double latitude, longitude;
 

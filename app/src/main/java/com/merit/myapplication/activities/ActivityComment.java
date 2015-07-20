@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -25,18 +26,14 @@ import com.merit.myapplication.moduls.LinkedTextView;
 import com.merit.myapplication.moduls.ListViewActivityCommentAdapter;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by merit on 7/19/2015.
  */
 public class ActivityComment extends Activity implements ListViewActivityCommentAdapter.OnClickItemCommentListener {
+    private Post mPost;
     private String mParentActivity;
-    private String mMediaId;
-    private String mUserId;
-    private String mUserName;
-    private String mUserAvatar;
-    private String mCaption;
-    private String mTimeOfCaption;
 
     ActionBar abComment;
     ListView lvComments;
@@ -66,16 +63,8 @@ public class ActivityComment extends Activity implements ListViewActivityComment
         loCaption = (RelativeLayout) findViewById(R.id.loCaption);
 
         Intent intent = getIntent();
+        mPost = (Post) intent.getSerializableExtra("MPOST");
         mParentActivity = intent.getStringExtra(MainActivity.PARENT);
-        mMediaId = intent.getStringExtra("MEDIAID");
-
-        if (mMediaId != null) {
-            mUserName = intent.getStringExtra("USERNAME");
-            mUserId = intent.getStringExtra("USERID");
-            mCaption = intent.getStringExtra("TEXT");
-            mUserAvatar = intent.getStringExtra("AVATAR");
-            mTimeOfCaption = intent.getStringExtra("TIME");
-        }
 
         showCaption();
 
@@ -122,28 +111,28 @@ public class ActivityComment extends Activity implements ListViewActivityComment
                 mDialog.dismiss();
                 return false;
             }
-        }), mMediaId);
+        }), mPost.getId());
     }
 
     private void showCaption() {
-        if (mCaption == null || mCaption.equals("")) {
+        if (mPost.getCaptionOfPost() == null) {
             loCaption.setVisibility(View.GONE);
         } else {
             CircleImageView ivAvatar = (CircleImageView) loCaption.findViewById(R.id.ivAvatarOfCaption);
-            new ImageLoader(this).DisplayImage(mUserAvatar, ivAvatar);
+            new ImageLoader(this).DisplayImage(mPost.getUserOfPost().getProfilePicture(), ivAvatar);
             ivAvatar.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    startAccountActivity(mUserId);
+                    startAccountActivity(mPost.getUserOfPost().getId());
                 }
             });
 
 
-            String caption = "(user)" + mUserName + "(/user)" + " " + mCaption + "<br>" + "<font color='gray'>" + mTimeOfCaption + "</font>";
+            String caption = "(user)" + mPost.getUserOfPost().getUserName() + "(/user)" + " " + mPost.getCaptionOfPost().getTextOfCaption() + "<br>" + "<font color='gray'>" + mPost.getCaptionOfPost().getCreatedTimeOfCaption() + "</font>";
             LinkedTextView.autoLink(((TextView) loCaption.findViewById(R.id.tvContentOfCaption)), caption, new LinkedTextView.OnClickListener() {
                 @Override
                 public void onLinkClicked(String link) {
-                    startAccountActivity(mUserId);
+                    startAccountActivity(mPost.getUserOfPost().getId());
                 }
 
                 @Override

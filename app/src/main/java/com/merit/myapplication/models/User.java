@@ -1,9 +1,11 @@
 package com.merit.myapplication.models;
 
+import java.io.Serializable;
+
 /**
  * Created by merit on 7/12/2015.
  */
-public class User {
+public class User implements Serializable {
     String userName, profilePicture, id, fullName;
     String outgoing_status, incoming_status;
 

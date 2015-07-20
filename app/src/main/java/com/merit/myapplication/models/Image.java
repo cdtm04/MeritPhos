@@ -1,9 +1,11 @@
 package com.merit.myapplication.models;
 
+import java.io.Serializable;
+
 /**
  * Created by merit on 7/12/2015.
  */
-public class Image {
+public class Image implements Serializable {
     String url;
     int height, width;
 

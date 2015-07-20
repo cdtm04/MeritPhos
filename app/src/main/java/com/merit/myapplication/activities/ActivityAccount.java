@@ -341,16 +341,9 @@ public class ActivityAccount extends FragmentActivity implements ListViewActivit
     @Override
     public void tvCommentsEventOnText(Post mPostedMediaItem) {
         Intent intent = new Intent(this, ActivityComment.class);
-        intent.putExtra(MainActivity.PARENT, MainActivity.PARENT_ACCOUNT);
-        intent.putExtra("MEDIAID", mPostedMediaItem.getId());
-        intent.putExtra("USERNAME", mPostedMediaItem.getUserOfPost().getUserName());
-        intent.putExtra("USERID", mPostedMediaItem.getUserOfPost().getId());
-        intent.putExtra("AVATAR", mPostedMediaItem.getUserOfPost().getProfilePicture());
-        if (mPostedMediaItem.getCaptionOfPost() != null) {
-            intent.putExtra("TEXT", mPostedMediaItem.getCaptionOfPost().getTextOfCaption());
-            intent.putExtra("TIME", mPostedMediaItem.getCaptionOfPost().getCreatedTimeOfCaption());
-        }
-        this.startActivity(intent);
+        intent.putExtra("MPOST", mPostedMediaItem);
+        intent.putExtra(MainActivity.PARENT, MainActivity.PARENT_HOME);
+        startActivity(intent);
     }
 
     @Override

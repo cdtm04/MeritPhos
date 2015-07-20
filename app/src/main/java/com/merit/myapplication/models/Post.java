@@ -9,7 +9,9 @@ import java.util.ArrayList;
 /**
  * Created by merit on 7/12/2015.
  */
-public class Post {
+public class Post implements Serializable {
+    private static final long serialVersionUID = -7060210544600464481L;
+
     Location locationOfPost;
     String filter, createdTime, link, type, id;
     Caption captionOfPost;

@@ -1,9 +1,11 @@
 package com.merit.myapplication.models;
 
+import java.io.Serializable;
+
 /**
  * Created by merit on 7/13/2015.
  */
-public class Caption {
+public class Caption implements Serializable {
     String idOfCaption, createdTimeOfCaption, textOfCaption;
     User userOfCaption;
 

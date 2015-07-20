@@ -2,10 +2,12 @@ package com.merit.myapplication.models;
 
 import android.graphics.Bitmap;
 
+import java.io.Serializable;
+
 /**
  * Created by merit on 7/10/2015.
  */
-public class UserProfile {
+public class UserProfile implements Serializable {
     private int countPosts, countFollowers, countFollowing;
     private String userName, fullName, link, bio, id;
     private String avatar;

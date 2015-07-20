@@ -1,9 +1,11 @@
 package com.merit.myapplication.models;
 
+import java.io.Serializable;
+
 /**
  * Created by merit on 7/12/2015.
  */
-public class Comment {
+public class Comment implements Serializable{
     String id, createdTime, text;
     User user;
 
