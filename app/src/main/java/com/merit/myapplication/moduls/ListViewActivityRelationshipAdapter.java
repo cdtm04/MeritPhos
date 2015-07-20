@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.merit.myapplication.R;
@@ -54,7 +55,8 @@ public class ListViewActivityRelationshipAdapter extends BaseAdapter {
             holder = new ViewHolder();
             holder.ivAvatar = (CircleImageView) convertView.findViewById(R.id.ivAvatar);
             holder.tvContent = (TextView) convertView.findViewById(R.id.tvContent);
-            holder.btnFollow = (ImageView) convertView.findViewById(R.id.btnFollow);
+            //holder.btnFollow = (ImageView) convertView.findViewById(R.id.btnFollow);
+            //holder.itemLvRelationship = (RelativeLayout) convertView.findViewById(R.id.itemLvRelationship);
 
             convertView.setTag(holder);
         } else {
@@ -69,13 +71,13 @@ public class ListViewActivityRelationshipAdapter extends BaseAdapter {
             holder.tvContent.setText(Html.fromHtml(content));
         }
 
-
         return convertView;
     }
 
     private class ViewHolder {
         CircleImageView ivAvatar;
-        ImageView btnFollow;
+        //ImageView btnFollow;
         TextView tvContent;
+        //RelativeLayout itemLvRelationship;
     }
 }

@@ -3,11 +3,15 @@ package com.merit.myapplication.activities;
 import android.app.ActivityGroup;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
-
-import com.merit.myapplication.loaddata.ImageLoader;
+import android.widget.Toast;
 
 import java.util.ArrayList;
+
+import com.merit.myapplication.R;
+
+import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
 /**
  * Created by merit on 6/25/2015.
@@ -16,6 +20,7 @@ public class ActivityHomeGroup extends ActivityGroup {
     View rootView;
     public static ActivityHomeGroup groupHomeGroup;
     private ArrayList<View> historyHomeGroup;
+    private boolean doubleBackToExitPressedOnce = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +53,25 @@ public class ActivityHomeGroup extends ActivityGroup {
                 try {
                     MainActivity.backToLastTab();
                 } catch (Exception ex) {
-                    finish();
+                    //finish();
+                    if (doubleBackToExitPressedOnce) {
+                        //super.onBackPressed();
+                        finish();
+                        return;
+                    } else {
+                        MainActivity.historyTab.add(0, 0);
+                    }
+
+                    this.doubleBackToExitPressedOnce = true;
+                    Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
+
+                    new Handler().postDelayed(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            doubleBackToExitPressedOnce = false;
+                        }
+                    }, 2000);
                 }
             }
         } catch (Exception ex) {

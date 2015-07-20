@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/themebackgroundcolor">
+
+    <com.merit.myapplication.moduls.ActionBar
+        android:id="@+id/abComment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"></com.merit.myapplication.moduls.ActionBar>
+
+    <RelativeLayout
+        android:id="@+id/loCaption"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/abComment"
+        android:background="@drawable/shape_underline"
+        android:padding="10dp">
+
+        <com.merit.myapplication.moduls.CircleImageView
+            android:id="@+id/ivAvatarOfCaption"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_centerVertical="true"
+            android:src="@drawable/picture" />
+
+
+        <TextView
+            android:id="@+id/tvContentOfCaption"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_margin="10dp"
+            android:layout_toRightOf="@+id/ivAvatarOfCaption"
+            android:text="ash started following you. 1h"
+            android:textColor="#000000" />
+
+    </RelativeLayout>
+
+
+    <ListView
+        android:id="@+id/lvComments"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/relative"
+        android:layout_below="@+id/loCaption"
+        android:stackFromBottom="true"></ListView>
+
+    <RelativeLayout
+        android:id="@+id/relative"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true">
+
+        <EditText
+            android:id="@+id/edtComment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@+id/btnSendComment"
+            android:background="#ffffff"
+            android:hint="Add a comment"
+            android:maxHeight="200dp"
+            android:maxLength="300"
+            android:padding="15dp" />
+
+        <RelativeLayout
+            android:id="@+id/btnSendComment"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/edtComment"
+            android:layout_alignParentRight="true"
+            android:layout_alignTop="@+id/edtComment"
+            android:background="#4190db"
+            android:clickable="true">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:src="@drawable/icon_send_comment" />
+        </RelativeLayout>
+
+    </RelativeLayout>
+</RelativeLayout>

@@ -18,11 +18,41 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"></com.merit.myapplication.moduls.ActionBar>
 
-        <FrameLayout
-            android:id="@+id/loCamera"
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#000000"></FrameLayout>
+            android:background="#000000">
+
+            <RelativeLayout
+                android:id="@+id/loCamera"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#000000"></RelativeLayout>
+
+            <ImageView
+                android:id="@+id/btnFlash"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_alignBottom="@+id/loCamera"
+                android:layout_alignParentRight="true"
+                android:clickable="true"
+                android:padding="10dp"
+                android:src="@drawable/flash_off" />
+
+            <ImageView
+                android:id="@+id/btnSwitch"
+                android:layout_width="60dp"
+                android:layout_height="50dp"
+                android:layout_alignBottom="@+id/loCamera"
+                android:layout_alignParentLeft="true"
+                android:clickable="true"
+                android:paddingBottom="10dp"
+                android:paddingLeft="-10dp"
+                android:paddingTop="10dp"
+                android:src="@drawable/switch_cam" />
+
+        </RelativeLayout>
+
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -43,6 +73,7 @@
         android:id="@+id/pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/actionbar_height"
         android:clickable="false"></android.support.v4.view.ViewPager>
 
     <com.merit.myapplication.moduls.SlidingTabLayout

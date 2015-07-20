@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -16,7 +17,11 @@ import android.widget.Toast;
 
 import com.merit.myapplication.R;
 import com.merit.myapplication.activities.ActivityAccountGroup;
+import com.merit.myapplication.activities.ActivityComment;
+import com.merit.myapplication.activities.ActivityHomeGroup;
 import com.merit.myapplication.activities.ActivityRelationship;
+import com.merit.myapplication.activities.MainActivity;
+import com.merit.myapplication.instagram.InstagramApp;
 import com.merit.myapplication.loaddata.ImageLoader;
 import com.merit.myapplication.models.Post;
 import com.merit.myapplication.models.UserProfile;
@@ -266,6 +271,8 @@ public class ListViewActivityAccountAdapter extends BaseAdapter implements Stick
         holder.btnComment.setOnClickListener(new EventStickyHeaderItems(mPostedMediaItem, null, holder, convertView, position));
         holder.btnOption.setOnClickListener(new EventStickyHeaderItems(mPostedMediaItem, null, holder, convertView, position));
         holder.tvCountLikes.setOnClickListener(new EventStickyHeaderItems(mPostedMediaItem, null, holder, convertView, position));
+        holder.btnComment.setOnTouchListener(new EventStickyHeaderItems(mPostedMediaItem, null, holder, convertView, position));
+        holder.btnOption.setOnTouchListener(new EventStickyHeaderItems(mPostedMediaItem, null, holder, convertView, position));
         return convertView;
     }
 
@@ -282,7 +289,7 @@ public class ListViewActivityAccountAdapter extends BaseAdapter implements Stick
             viewHolderProfile.tvCountPosts = (TextView) convertView.findViewById(R.id.tvCountPosts);
             viewHolderProfile.tvCountFollowing = (TextView) convertView.findViewById(R.id.tvCountFollowing);
             viewHolderProfile.tvCountFollowers = (TextView) convertView.findViewById(R.id.tvCountFollowers);
-            viewHolderProfile.btnEditProfile = (Button) convertView.findViewById(R.id.btnEditProfile);
+            viewHolderProfile.btnEditProfile = (ImageView) convertView.findViewById(R.id.btnEditProfile);
             viewHolderProfile.tvFullNameProfile = (TextView) convertView.findViewById(R.id.tvFullNameProfile);
             viewHolderProfile.tvLinkProfile = (TextView) convertView.findViewById(R.id.tvLinkProfile);
             viewHolderProfile.tvBioProfile = (TextView) convertView.findViewById(R.id.tvBioProfile);
@@ -319,6 +326,16 @@ public class ListViewActivityAccountAdapter extends BaseAdapter implements Stick
         else {
             viewHolderProfile.tvLinkProfile.setVisibility(View.VISIBLE);
             viewHolderProfile.tvLinkProfile.setText(mUserProfile.getLink() + "");
+        }
+
+        if (mUserProfile.getOutgoing() != null) {
+            if (mUserProfile.getOutgoing().equals("me")) {
+
+            } else if (mUserProfile.getOutgoing().equals("follows")) {
+                viewHolderProfile.btnEditProfile.setImageDrawable(mContext.getResources().getDrawable(R.drawable.button_followed_long2));
+            } else {
+                viewHolderProfile.btnEditProfile.setImageDrawable(mContext.getResources().getDrawable(R.drawable.button_follow_long2));
+            }
         }
 
         // change icon
@@ -447,12 +464,11 @@ public class ListViewActivityAccountAdapter extends BaseAdapter implements Stick
     private class ViewHolderProfile {
         CircleImageView ivAvatarProfile;
         RelativeLayout btnCountPosts, btnCountFollowers, btnCountFollowing;
-        Button btnEditProfile;
         TextView tvCountPosts, tvCountFollowers, tvCountFollowing, tvFullNameProfile, tvBioProfile, tvLinkProfile;
-        ImageView btnGridViewMedia, btnListViewMedia, btnMapMedia, btnTagMedia;
+        ImageView btnGridViewMedia, btnListViewMedia, btnMapMedia, btnTagMedia, btnEditProfile;
     }
 
-    private class EventStickyHeaderItems implements View.OnClickListener, LinkedTextView.OnClickListener {
+    private class EventStickyHeaderItems implements View.OnClickListener, LinkedTextView.OnClickListener, View.OnTouchListener {
         Post mPostedMediaItem;
         ListViewHeaderHolder viewHeaderHolder;
         ListViewHolder viewHolder;
@@ -471,13 +487,13 @@ public class ListViewActivityAccountAdapter extends BaseAdapter implements Stick
         // CODE tvComments EVENT
         private void tvCommentsEvent(String link) {
             if (link != null) {
-                // TO DO WHEN CLICK tvComments on LINK HERE
+                mEventAcctivityAccount.tvCommentsEventOnLink(link, mPostedMediaItem);
 
-                Toast.makeText(mContext, "tvComments " + position + " of user " + link + " is clicked on link", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(mContext, "tvComments " + position + " of user " + link + " is clicked on link", Toast.LENGTH_SHORT).show();
             } else {
                 // TO DO WHEN CLICK tvComments on TEXVIEW HERE
-
-                Toast.makeText(mContext, "tvComments " + position + " of user " + link + " is clicked on text", Toast.LENGTH_SHORT).show();
+                mEventAcctivityAccount.tvCommentsEventOnText(mPostedMediaItem);
+                //Toast.makeText(mContext, "tvComments " + position + " of user " + link + " is clicked on text", Toast.LENGTH_SHORT).show();
             }
         }
 
@@ -485,13 +501,18 @@ public class ListViewActivityAccountAdapter extends BaseAdapter implements Stick
 
         private void tvCountLikesEvent() {
             // TO DO WHEN CLICK tvCountLikes HERE
+            Intent iOpenRelationship = new Intent(mContext, ActivityRelationship.class);
+            iOpenRelationship.putExtra("LABELNAME", InstagramApp.GET_LIKED_USERS);
+            iOpenRelationship.putExtra("ID", mPostedMediaItem.getId());
+            iOpenRelationship.putExtra("PARENT", "AccountActivity");
+            View view = ActivityHomeGroup.groupHomeGroup.getLocalActivityManager().startActivity("ActivityRelationship", iOpenRelationship.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)).getDecorView();
+            ActivityHomeGroup.groupHomeGroup.replaceView(view);
 
-            Toast.makeText(mContext, "tvCountLikes " + position + " of user " + mPostedMediaItem.getUserOfPost().getUserName() + " is clicked", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(mContext, "tvCountLikes " + position + " of user " + mPostedMediaItem.getUserOfPost().getUserName() + " is clicked", Toast.LENGTH_SHORT).show();
         }
 
         // CODE btnOption EVENT
         private void btnOptionEvent() {
-            viewHolder.btnOption.setImageAlpha(225);
             // TO DO WHEN CLICK btnOption HERE
 
             Toast.makeText(mContext, "btnOption " + position + " of user " + mPostedMediaItem.getUserOfPost().getUserName() + " is clicked", Toast.LENGTH_SHORT).show();
@@ -499,10 +520,19 @@ public class ListViewActivityAccountAdapter extends BaseAdapter implements Stick
 
         // CODE btnComment EVENT
         private void btnCommentEvent() {
-            viewHolder.btnComment.setImageAlpha(225);
             // TO DO WHEN CLICK btnComment HERE
-
-            Toast.makeText(mContext, "btnComment " + position + " of user " + mPostedMediaItem.getUserOfPost().getUserName() + " is clicked", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(mContext, ActivityComment.class);
+            intent.putExtra(MainActivity.PARENT, MainActivity.PARENT_ACCOUNT);
+            intent.putExtra("MEDIAID", mPostedMediaItem.getId());
+            intent.putExtra("USERNAME", mPostedMediaItem.getUserOfPost().getUserName());
+            intent.putExtra("USERID", mPostedMediaItem.getUserOfPost().getId());
+            intent.putExtra("AVATAR", mPostedMediaItem.getUserOfPost().getProfilePicture());
+            if (mPostedMediaItem.getCaptionOfPost() != null) {
+                intent.putExtra("TEXT", mPostedMediaItem.getCaptionOfPost().getTextOfCaption());
+                intent.putExtra("TIME", mPostedMediaItem.getCaptionOfPost().getCreatedTimeOfCaption());
+            }
+            mContext.startActivity(intent);
+            //Toast.makeText(mContext, "btnComment " + position + " of user " + mPostedMediaItem.getUserOfPost().getUserName() + " is clicked", Toast.LENGTH_SHORT).show();
         }
 
         // CODE btnAccount EVENT
@@ -551,6 +581,24 @@ public class ListViewActivityAccountAdapter extends BaseAdapter implements Stick
         public void onClicked() {
             tvCommentsEvent(null);
         }
+
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            if (v == viewHolder.btnOption) {
+                if (event.getAction() == MotionEvent.AXIS_PRESSURE) {
+                    viewHolder.btnOption.setImageAlpha(225);
+                } else {
+                    viewHolder.btnOption.setImageAlpha(128);
+                }
+            } else if (v == viewHolder.btnComment) {
+                if (event.getAction() == MotionEvent.AXIS_PRESSURE) {
+                    viewHolder.btnComment.setImageAlpha(225);
+                } else {
+                    viewHolder.btnComment.setImageAlpha(128);
+                }
+            }
+            return false;
+        }
     }
 
     private class EventProfileItems implements View.OnClickListener {
@@ -567,29 +615,6 @@ public class ListViewActivityAccountAdapter extends BaseAdapter implements Stick
             // TO DO WHEN CLICK btnEditProfile HERE
 
             Toast.makeText(view.getContext(), "btnEditProfile is clicked", Toast.LENGTH_SHORT).show();
-        }
-
-        // CODE btnCountPosts EVENT
-        private void btnCountPostsEvent() {
-            // TO DO WHEN CLICK btnCountPosts HERE
-
-            //Toast.makeText(view.getContext(), "btnCountPosts is clicked", Toast.LENGTH_SHORT).show();
-        }
-
-        // CODE btnCountFollowing EVENT
-        private void btnCountFollowingEvent() {
-            Intent iOpenRelationship = new Intent(mContext, ActivityRelationship.class);
-            iOpenRelationship.putExtra("labelName", "FOLLOWING");
-            View view = ActivityAccountGroup.groupAccountGroup.getLocalActivityManager().startActivity("ActivityRelationship", iOpenRelationship.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)).getDecorView();
-            ActivityAccountGroup.groupAccountGroup.replaceView(view);
-        }
-
-        // CODE btnCountFollwers EVENT
-        private void btnCountFollowersEvent() {
-            Intent iOpenRelationship = new Intent(mContext, ActivityRelationship.class);
-            iOpenRelationship.putExtra("labelName", "FOLLOWERS");
-            View view = ActivityAccountGroup.groupAccountGroup.getLocalActivityManager().startActivity("ActivityRelationship", iOpenRelationship.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)).getDecorView();
-            ActivityAccountGroup.groupAccountGroup.replaceView(view);
         }
 
         // CODE btnTagMedia EVENT
@@ -620,8 +645,10 @@ public class ListViewActivityAccountAdapter extends BaseAdapter implements Stick
             else if (v == viewHolderProfile.btnMapMedia) btnMapMediaEvent();
             else if (v == viewHolderProfile.btnCountPosts)
                 mEventAcctivityAccount.btnCountPostsEvent();
-            else if (v == viewHolderProfile.btnCountFollowing) btnCountFollowingEvent();
-            else if (v == viewHolderProfile.btnCountFollowers) btnCountFollowersEvent();
+            else if (v == viewHolderProfile.btnCountFollowing)
+                mEventAcctivityAccount.btnCountFollowingEvent();
+            else if (v == viewHolderProfile.btnCountFollowers)
+                mEventAcctivityAccount.btnCountFollowersEvent();
             else if (v == viewHolderProfile.btnEditProfile) btnEditProfileEvent();
             else if (v == viewHolderProfile.btnListViewMedia) {
                 // change listview to ListViewMedia style
@@ -673,6 +700,13 @@ public class ListViewActivityAccountAdapter extends BaseAdapter implements Stick
         public void btnCountPostsEvent();
 
         public void onClickGridViewItem(int positionInGridView, int positonInListView);
-    }
 
+        public void btnCountFollowersEvent();
+
+        public void btnCountFollowingEvent();
+
+        public void tvCommentsEventOnText(Post mPostedMediaItem);
+
+        public void tvCommentsEventOnLink(String link, Post mPostedMediaItem);
+    }
 }

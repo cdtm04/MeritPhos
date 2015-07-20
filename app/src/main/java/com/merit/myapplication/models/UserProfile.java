@@ -9,17 +9,36 @@ public class UserProfile {
     private int countPosts, countFollowers, countFollowing;
     private String userName, fullName, link, bio, id;
     private String avatar;
+    private String incoming, outgoing;
 
-    public UserProfile(String id, String userName, int countPosts, int countFollowers, int countFollowing, String fullName, String link, String bio, String avatar) {
-        this.id = id;
-        this.userName = userName;
+    public UserProfile(int countPosts, int countFollowers, int countFollowing, String userName, String fullName, String link, String bio, String id, String avatar, String incoming, String outgoing) {
         this.countPosts = countPosts;
         this.countFollowers = countFollowers;
         this.countFollowing = countFollowing;
+        this.userName = userName;
         this.fullName = fullName;
         this.link = link;
         this.bio = bio;
+        this.id = id;
         this.avatar = avatar;
+        this.incoming = incoming;
+        this.outgoing = outgoing;
+    }
+
+    public String getIncoming() {
+        return incoming;
+    }
+
+    public void setIncoming(String incoming) {
+        this.incoming = incoming;
+    }
+
+    public String getOutgoing() {
+        return outgoing;
+    }
+
+    public void setOutgoing(String outgoing) {
+        this.outgoing = outgoing;
     }
 
     public String getId() {
@@ -30,7 +49,7 @@ public class UserProfile {
         this.id = id;
     }
 
-    public void setValues(String id, String userName, int countPosts, int countFollowers, int countFollowing, String fullName, String link, String bio, String avatar) {
+    public void setValues(String id, String userName, int countPosts, int countFollowers, int countFollowing, String fullName, String link, String bio, String avatar, String incoming, String outgoing) {
         this.id = id;
         this.userName = userName;
         this.countPosts = countPosts;
@@ -40,6 +59,8 @@ public class UserProfile {
         this.link = link;
         this.bio = bio;
         this.avatar = avatar;
+        this.incoming = incoming;
+        this.outgoing = outgoing;
     }
 
     public String getUserName() {

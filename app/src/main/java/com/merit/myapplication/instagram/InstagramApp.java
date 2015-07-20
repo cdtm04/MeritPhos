@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
+import android.text.format.Time;
 import android.util.Log;
 
 import com.merit.myapplication.activities.MainActivity;
@@ -15,17 +16,23 @@ import com.merit.myapplication.models.Location;
 import com.merit.myapplication.models.Post;
 import com.merit.myapplication.models.User;
 
+import org.apache.http.client.ClientProtocolException;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
+import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+
+import android.text.format.DateUtils;
 
 /**
  * @author Thiago Locatelli <thiago.locatelli@gmail.com>
@@ -41,11 +48,17 @@ public class InstagramApp {
 
     private HashMap<String, String> userInfo = new HashMap<String, String>();
     private ArrayList<Post> mAllRecentMedias = new ArrayList<>();
+    private String mNextPageAllRecentMediasUrl;
     private ArrayList<Post> mNewFeeds = new ArrayList<>();
+    private String mNextPageNewFeedsUrl;
     private ArrayList<User> mFollowers = new ArrayList<>();
     private String mNextPageFollowers;
     private ArrayList<User> mFollowings = new ArrayList<>();
     private String mNextPageFollowings;
+    private ArrayList<User> mLikedUsers = new ArrayList<>();
+    private String mNextPageLikedUsers;
+    private ArrayList<Comment> mComments = new ArrayList<>();
+    private String mNextPageComments;
 
     private String mAuthUrl;
     private String mTokenUrl;
@@ -57,6 +70,7 @@ public class InstagramApp {
 
     public static int WHAT_FINALIZE = 0;
     public static int WHAT_ERROR = 1;
+    public static int WHAT_ERROR2 = 3;
     private static int WHAT_FETCH_INFO = 2;
 
     /**
@@ -68,6 +82,8 @@ public class InstagramApp {
     private static final String AUTH_URL = "https://api.instagram.com/oauth/authorize/";
     private static final String TOKEN_URL = "https://api.instagram.com/oauth/access_token";
     private static final String API_URL = "https://api.instagram.com/v1";
+    private static final String API_NEWFEED = "https://api.instagram.com/v1/users/self/feed?access_token=";
+    private static final String API_RECENT = "https://api.instagram.com/v1/users/self/media/recent/?access_token=";
 
     private static final String TAG = "InstagramAPI";
 
@@ -111,8 +127,11 @@ public class InstagramApp {
     public static final String TAG_VIDEO = "videos";
     public static final String TAG_ISLIKED = "user_has_liked";
     public static final String TAG_PAGNINATION = "pagination";
-
-    private boolean isfetchAllRecentMediasRunning = false;
+    public static final String TAG_OUTGOING = "outgoing_status";
+    public static final String TAG_INCOMING = "incoming_status";
+    public static final String GET_FOLLOWERS = "GET_FOLLOWERS";
+    public static final String GET_FOLLOWING = "GET_FOLLOWING";
+    public static final String GET_LIKED_USERS = "GET_LIKED_USERS";
 
     public InstagramApp(Context context, String clientId, String clientSecret, String callbackUrl) {
         mClientId = clientId;
@@ -198,9 +217,10 @@ public class InstagramApp {
     }
 
     // get Profile Informations
-    public void fetchProfileInformation(final Handler handler) {
+    public void fetchProfileInformation(final Handler handler, final String userId) {
         final ProgressDialog mProgressFetchUserName = new ProgressDialog(MainActivity.mainContext);
         mProgressFetchUserName.setMessage("Loading info...");
+        mProgressFetchUserName.setCancelable(false);
         mProgressFetchUserName.show();
 
         new Thread() {
@@ -209,7 +229,7 @@ public class InstagramApp {
                 Log.i(TAG, "Fetching user info");
                 int what = WHAT_FINALIZE;
                 try {
-                    URL url = new URL(API_URL + "/users/" + mSession.getId()
+                    URL url = new URL(API_URL + "/users/" + userId
                             + "/?access_token=" + mAccessToken);
 
                     Log.d(TAG, "Opening URL " + url.toString());
@@ -228,7 +248,8 @@ public class InstagramApp {
                     // jsonObj.getJSONObject("data").getString("bio");
                     // Log.i(TAG, "Got name: " + name + ", bio [" + bio + "]");
                     JSONObject data_obj = jsonObj.getJSONObject(TAG_DATA);
-                    userInfo.put(TAG_ID, data_obj.getString(TAG_ID));
+                    String id = data_obj.getString(TAG_ID);
+                    userInfo.put(TAG_ID, id);
 
                     userInfo.put(TAG_PROFILE_PICTURE,
                             data_obj.getString(TAG_PROFILE_PICTURE));
@@ -252,6 +273,22 @@ public class InstagramApp {
                             data_obj.getString(TAG_FULL_NAME));
 
                     JSONObject meta_obj = jsonObj.getJSONObject(TAG_META);
+
+                    String incoming = null;
+                    String outgoing = null;
+
+                    try {
+                        JSONParser jsonParser1 = new JSONParser();
+                        JSONObject jsonObject1 = jsonParser1.getJSONFromUrlByGet("https://api.instagram.com/v1/users/" + id + "/relationship?access_token=" + mSession.getAccessToken());
+
+                        JSONObject data_obj1 = jsonObject1.getJSONObject(TAG_DATA);
+                        incoming = data_obj1.getString(TAG_INCOMING);
+                        outgoing = data_obj1.getString(TAG_OUTGOING);
+                    } catch (Exception ex) {
+                    }
+
+                    userInfo.put(TAG_INCOMING, incoming);
+                    userInfo.put(TAG_OUTGOING, outgoing);
 
                     userInfo.put(TAG_CODE, meta_obj.getString(TAG_CODE));
                 } catch (Exception ex) {
@@ -279,7 +316,22 @@ public class InstagramApp {
                                     + "&count="
                                     + userInfo.get(InstagramApp.TAG_COUNTS));*/
             JSONObject jsonObject = jsonParser.getJSONFromUrlByGet(mUrl + mSession.getAccessToken());
-            String a = mUrl + mSession.getAccessToken();
+
+            // try to get next page url
+            try {
+                JSONObject pagination_obj = jsonObject.getJSONObject(TAG_PAGNINATION);
+                if (mUrl.startsWith(InstagramApp.API_NEWFEED))
+                    mNextPageNewFeedsUrl = pagination_obj.getString(TAG_NEXT_URL);
+                else if (mUrl.startsWith(InstagramApp.API_RECENT))
+                    mNextPageAllRecentMediasUrl = pagination_obj.getString(TAG_NEXT_URL);
+            } catch (Exception ex) {
+                if (mUrl.startsWith(InstagramApp.API_NEWFEED))
+                    mNextPageNewFeedsUrl = null;
+                else if (mUrl.startsWith(InstagramApp.API_RECENT))
+                    mNextPageAllRecentMediasUrl = null;
+            }
+
+            //String a = mUrl + mSession.getAccessToken();
             JSONArray data = jsonObject.getJSONArray(TAG_DATA);
             for (int data_i = 0; data_i < data.length(); data_i++) {
                 JSONObject data_obj = data.getJSONObject(data_i);
@@ -336,10 +388,15 @@ public class InstagramApp {
 
                 // get createdTime
                 String createdTime = data_obj.getString(TAG_CREATEDTIME);
-                long foo = Long.parseLong(createdTime) * 1000;
-                Date date = new Date(foo);
-                SimpleDateFormat formatter = new SimpleDateFormat("MMMM/dd/yyyy");
-                post.setCreatedTime(formatter.format(date));
+                //long foo = Long.parseLong(createdTime) * 1000;
+                //Date date = new Date(foo);
+                //SimpleDateFormat formatter = new SimpleDateFormat("MMMM/dd/yyyy");
+                Time currentTime = new Time(Time.getCurrentTimezone());
+                currentTime.setToNow();
+
+                String time = (String) DateUtils.getRelativeTimeSpanString(Long.parseLong(createdTime) * 1000, currentTime.toMillis(true), DateUtils.MINUTE_IN_MILLIS, DateUtils.FORMAT_ABBREV_RELATIVE);
+                post.setCreatedTime(time);
+                //post.setCreatedTime(formatter.format(date));
 
                 // get link
                 String link = data_obj.getString(TAG_LINK);
@@ -392,10 +449,15 @@ public class InstagramApp {
                     JSONObject caption_obj = data_obj.getJSONObject(TAG_CAPTION);
                     String textOfCaption = caption_obj.getString(TAG_TEXT);
                     String createdTimeOfCaption = caption_obj.getString(TAG_CREATEDTIME);
+
+                    Time currentTimeOfCaption = new Time(Time.getCurrentTimezone());
+                    currentTimeOfCaption.setToNow();
+                    String timeOfCaption = (String) DateUtils.getRelativeTimeSpanString(Long.parseLong(createdTimeOfCaption) * 1000, currentTime.toMillis(true), DateUtils.MINUTE_IN_MILLIS, DateUtils.FORMAT_ABBREV_RELATIVE);
+
                     String idOfCaption = caption_obj.getString(TAG_ID);
                     JSONObject userOfCaption_obj = caption_obj.getJSONObject(TAG_FROM);
                     User userOfCaption = new User(userOfCaption_obj.getString(TAG_USERNAME), userOfCaption_obj.getString(TAG_PROFILE_PICTURE), userOfCaption_obj.getString(TAG_ID), userOfCaption_obj.getString(TAG_FULL_NAME), null, null);
-                    Caption captionOfPost = new Caption(idOfCaption, createdTimeOfCaption, textOfCaption, userOfCaption);
+                    Caption captionOfPost = new Caption(idOfCaption, timeOfCaption, textOfCaption, userOfCaption);
                     post.setCaptionOfPost(captionOfPost);
                 } catch (Exception ex) {
                     post.setCaptionOfPost(null);
@@ -429,6 +491,23 @@ public class InstagramApp {
 
                 postArrayList.add(post);
             }
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            what = WHAT_ERROR2;
+            Log.i("ABCABC", "UnsupportedEncodingException");
+
+        } catch (ClientProtocolException e) {
+            e.printStackTrace();
+            what = WHAT_ERROR2;
+            Log.i("ABCABC", "ClientProtocolException");
+        } catch (IOException e) {
+            e.printStackTrace();
+            what = WHAT_ERROR2;
+            Log.i("ABCABC", "IOException");
+        } catch (JSONException e) {
+            Log.e("JSON Parser", "Error parsing data " + e.toString());
+            what = WHAT_ERROR2;
+            Log.i("ABCABC", "JSONException");
         } catch (Exception exception) {
             exception.printStackTrace();
             what = WHAT_ERROR;
@@ -437,10 +516,10 @@ public class InstagramApp {
     }
 
     // get All Recent Medias
-    public void fetchAllRecentMedias(final Handler handler) {
+    public void fetchAllRecentMedias(final Handler handler, String userId) {
         final ProgressDialog mDialog = ProgressDialog.show(MainActivity.mainContext, "", "Loading media...");
-        mDialog.setCancelable(true);
-        final String mUrl = "https://api.instagram.com/v1/users/self/media/recent/?access_token=";
+        mDialog.setCancelable(false);
+        final String mUrl = "https://api.instagram.com/v1/users/" + userId + "/media/recent/?access_token=";
         mAllRecentMedias.clear();
 
         new Thread(new Runnable() {
@@ -455,10 +534,24 @@ public class InstagramApp {
 
     }
 
+    public void fetchNextPageAllRecentMedias(final Handler handler) {
+        final ProgressDialog mDialog = ProgressDialog.show(MainActivity.mainContext, "", "Loading more...");
+        mDialog.setCancelable(false);
+        final String mUrl = mNextPageAllRecentMediasUrl;
+
+        new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                getMediaFromJSON(handler, mUrl, mAllRecentMedias);
+                mDialog.dismiss();
+            }
+        }).start();
+    }
+
     public void fetchNewFeeds(final Handler handler) {
-        final ProgressDialog mDialog = ProgressDialog.show(MainActivity.mainContext, "", "Loading new feeds...");
-        mDialog.setCancelable(true);
-        final String mUrl = "https://api.instagram.com/v1/users/self/feed?access_token=";
+        final String mUrl = InstagramApp.API_NEWFEED;
+        // clear old new feeds
         mNewFeeds.clear();
 
         new Thread(new Runnable() {
@@ -466,13 +559,24 @@ public class InstagramApp {
             @Override
             public void run() {
                 getMediaFromJSON(handler, mUrl, mNewFeeds);
-                mDialog.dismiss();
+            }
+        }).start();
+    }
+
+    public void fetchNextPageNewFeeds(final Handler handler) {
+        final String mUrl = mNextPageNewFeedsUrl;
+
+        new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                getMediaFromJSON(handler, mUrl, mNewFeeds);
             }
         }).start();
     }
 
     // get list user information from JSON
-    private synchronized void getUserFromJSON(Handler handler, String mUrl, boolean isGetFollower) {
+    private synchronized void getUserFromJSON(Handler handler, String mUrl, final String getWhat) {
         int what = WHAT_FINALIZE;
         try {
             // URL url = new URL(mTokenUrl + "&code=" + code);
@@ -482,11 +586,16 @@ public class InstagramApp {
             // try to get next page url
             try {
                 JSONObject pagination_obj = jsonObject.getJSONObject(TAG_PAGNINATION);
-                if (isGetFollower) mNextPageFollowers = pagination_obj.getString(TAG_NEXT_URL);
-                else mNextPageFollowings = pagination_obj.getString(TAG_NEXT_URL);
+                if (getWhat.equals(InstagramApp.GET_FOLLOWERS))
+                    mNextPageFollowers = pagination_obj.getString(TAG_NEXT_URL);
+                else if (getWhat.equals(InstagramApp.GET_FOLLOWING))
+                    mNextPageFollowings = pagination_obj.getString(TAG_NEXT_URL);
+                else if (getWhat.equals(InstagramApp.GET_LIKED_USERS))
+                    mNextPageLikedUsers = pagination_obj.getString(TAG_NEXT_URL);
             } catch (Exception ex) {
-                if (isGetFollower) mNextPageFollowers = null;
-                else mNextPageFollowings = null;
+                if (getWhat.equals(InstagramApp.GET_FOLLOWERS)) mNextPageFollowers = null;
+                else if (getWhat.equals(InstagramApp.GET_FOLLOWING)) mNextPageFollowings = null;
+                else if (getWhat.equals(InstagramApp.GET_LIKED_USERS)) mNextPageLikedUsers = null;
             }
 
             // get datas
@@ -499,9 +608,22 @@ public class InstagramApp {
                 String userName = data_obj.getString(TAG_USERNAME);
                 User user = new User(userName, avatar, str_id, fullName, null, null);
 
-                if (isGetFollower) mFollowers.add(user);
-                else mFollowings.add(user);
+                if (getWhat.equals(InstagramApp.GET_FOLLOWERS)) mFollowers.add(user);
+                else if (getWhat.equals(InstagramApp.GET_FOLLOWING)) mFollowings.add(user);
+                else if (getWhat.equals(InstagramApp.GET_LIKED_USERS)) mLikedUsers.add(user);
             }
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            what = WHAT_ERROR2;
+        } catch (ClientProtocolException e) {
+            e.printStackTrace();
+            what = WHAT_ERROR2;
+        } catch (IOException e) {
+            e.printStackTrace();
+            what = WHAT_ERROR2;
+        } catch (JSONException e) {
+            Log.e("JSON Parser", "Error parsing data " + e.toString());
+            what = WHAT_ERROR2;
         } catch (Exception exception) {
             exception.printStackTrace();
             what = WHAT_ERROR;
@@ -510,49 +632,118 @@ public class InstagramApp {
         handler.sendEmptyMessage(what);
     }
 
-    public void fetchRelationship(final Handler handler, final boolean isGetFollower) {
+    public void fetchRelationship(final Handler handler, final String getWhat, String userId) {
         String url = "";
         String mDialogTitle = "";
-        if (isGetFollower) {
-            url = "https://api.instagram.com/v1/users/self/followed-by?access_token=" + mSession.getAccessToken();
+        if (getWhat.equals(InstagramApp.GET_FOLLOWERS)) {
+            url = "https://api.instagram.com/v1/users/" + userId + "/followed-by?access_token=" + mSession.getAccessToken();
             mDialogTitle = "Loading followers...";
             mFollowers.clear();
-        } else {
-            url = "https://api.instagram.com/v1/users/self/follows?access_token=" + mSession.getAccessToken();
+        } else if (getWhat.equals(InstagramApp.GET_FOLLOWING)) {
+            url = "https://api.instagram.com/v1/users/" + userId + "/follows?access_token=" + mSession.getAccessToken();
             mDialogTitle = "Loading following...";
             mFollowings.clear();
+        } else if (getWhat.equals(InstagramApp.GET_LIKED_USERS)) {
+            url = "https://api.instagram.com/v1/media/" + userId + "/likes?access_token=" + mSession.getAccessToken();
+            mDialogTitle = "Loading likes...";
+            mLikedUsers.clear();
         }
         final String mUrl = url;
 
         final ProgressDialog mDialog = ProgressDialog.show(MainActivity.mainContext, "", mDialogTitle);
-        mDialog.setCancelable(true);
+        mDialog.setCancelable(false);
         new Thread(new Runnable() {
 
             @Override
             public void run() {
-                getUserFromJSON(handler, mUrl, isGetFollower);
+                getUserFromJSON(handler, mUrl, getWhat);
                 mDialog.dismiss();
             }
         }).start();
     }
 
-    public void fetchNextPageRelationship(final Handler handler, final boolean isGetFollower) {
+    public void fetchNextPageRelationship(final Handler handler, final String getWhat) {
         String url = "";
-        if (isGetFollower) {
+        if (getWhat.equals(InstagramApp.GET_FOLLOWERS)) {
             url = mNextPageFollowers;
-        } else {
+        } else if (getWhat.equals(InstagramApp.GET_FOLLOWING)) {
             url = mNextPageFollowings;
+        } else if (getWhat.equals(InstagramApp.GET_LIKED_USERS)) {
+            url = mNextPageLikedUsers;
         }
         final String mUrl = url;
 
         final ProgressDialog mDialog = ProgressDialog.show(MainActivity.mainContext, "", "Loading more...");
-        mDialog.setCancelable(true);
+        mDialog.setCancelable(false);
         new Thread(new Runnable() {
 
             @Override
             public void run() {
-                getUserFromJSON(handler, mUrl, isGetFollower);
+                getUserFromJSON(handler, mUrl, getWhat);
                 mDialog.dismiss();
+            }
+        }).start();
+    }
+
+    public void fetchComments(final Handler handler, final String mediaId) {
+        new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                int what = WHAT_FINALIZE;
+                try {
+                    mComments.clear();
+
+                    JSONParser jsonParser = new JSONParser();
+                    JSONObject jsonObject = jsonParser.getJSONFromUrlByGet("https://api.instagram.com/v1/media/" + mediaId + "/comments?access_token=" + mSession.getAccessToken());
+                    String a = "https://api.instagram.com/v1/media/" + mediaId + "/comments?access_token=" + mSession.getAccessToken();
+                    try {
+                        JSONObject pagination_obj = jsonObject.getJSONObject(TAG_PAGNINATION);
+                        mNextPageComments = pagination_obj.getString(TAG_NEXT_URL);
+                    } catch (Exception ex) {
+                        mNextPageComments = null;
+                    }
+
+                    // get datas
+                    JSONArray data = jsonObject.getJSONArray(TAG_DATA);
+                    for (int data_i = 0; data_i < data.length(); data_i++) {
+                        JSONObject comt = data.getJSONObject(data_i);
+
+                        Comment comment = new Comment();
+
+                        String createdTime = comt.getString(TAG_CREATEDTIME);
+                        //long foo = Long.parseLong(createdTime) * 1000;
+                        //Date date = new Date(foo);
+                        //SimpleDateFormat formatter = new SimpleDateFormat("MMMM/dd/yyyy");
+                        Time currentTime = new Time(Time.getCurrentTimezone());
+                        currentTime.setToNow();
+
+                        String time = (String) DateUtils.getRelativeTimeSpanString(Long.parseLong(createdTime) * 1000, currentTime.toMillis(true), DateUtils.MINUTE_IN_MILLIS, DateUtils.FORMAT_ABBREV_RELATIVE);
+                        comment.setCreatedTime(time);
+
+                        String text = comt.getString(TAG_TEXT);
+                        comment.setText(text);
+
+                        String id = comt.getString(TAG_ID);
+                        comment.setId(id);
+
+                        JSONObject from = comt.getJSONObject(TAG_FROM);
+                        String userName = from.getString(TAG_USERNAME);
+                        String profilePicture = from.getString(TAG_PROFILE_PICTURE);
+                        String fullName = from.getString(TAG_FULL_NAME);
+                        String userId = from.getString(TAG_ID);
+
+                        User user = new User(userName, profilePicture, userId, fullName, null, null);
+                        comment.setUser(user);
+
+                        mComments.add(comment);
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    what = WHAT_ERROR;
+                }
+
+                handler.sendEmptyMessage(what);
             }
         }).start();
     }
@@ -574,6 +765,14 @@ public class InstagramApp {
             }
         }
     };
+
+    public ArrayList<Comment> getComments() {
+        return mComments;
+    }
+
+    public ArrayList<User> getLikedUsers() {
+        return mLikedUsers;
+    }
 
     public HashMap<String, String> getUserInfo() {
         return userInfo;

@@ -3,7 +3,10 @@ package com.merit.myapplication.moduls;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
+import android.os.Parcelable;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -14,6 +17,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.merit.myapplication.R;
+import com.merit.myapplication.activities.ActivityAccount;
+import com.merit.myapplication.activities.ActivityComment;
+import com.merit.myapplication.activities.ActivityHomeGroup;
+import com.merit.myapplication.activities.ActivityRelationship;
 import com.merit.myapplication.activities.MainActivity;
 import com.merit.myapplication.instagram.InstagramApp;
 import com.merit.myapplication.loaddata.ImageLoader;
@@ -26,7 +33,7 @@ import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 /**
  * Created by merit on 7/2/2015.
  */
-public class ListViewActivityHomeAdapter extends BaseAdapter implements StickyListHeadersAdapter, SectionIndexer {
+public class ListViewActivityHomeAdapter extends BaseAdapter implements StickyListHeadersAdapter, SectionIndexer, View.OnTouchListener {
     private final Context mContext;
     private ArrayList<Post> mPostedMediaItems;
 
@@ -144,7 +151,7 @@ public class ListViewActivityHomeAdapter extends BaseAdapter implements StickyLi
         }
         contentOfTvComments = captionOfUser + contentOfTvComments;
         // set text & event for tvComments
-        LinkedTextView.autoLink(holder.tvComments, contentOfTvComments, new EventStickyHeaderItems(mPostedMediaItem, null, holder, convertView, position));
+        LinkedTextView.autoLink(holder.tvComments, contentOfTvComments, new EventItems(mPostedMediaItem, null, holder, convertView, position));
 
         // set event for items
         holder.btnLike.setOnClickListener(new EventItems(mPostedMediaItem, null, holder, convertView, position));
@@ -152,8 +159,12 @@ public class ListViewActivityHomeAdapter extends BaseAdapter implements StickyLi
         holder.btnOption.setOnClickListener(new EventItems(mPostedMediaItem, null, holder, convertView, position));
         holder.tvCountLikes.setOnClickListener(new EventItems(mPostedMediaItem, null, holder, convertView, position));
 
+        holder.btnComment.setOnTouchListener(new EventItems(mPostedMediaItem, null, holder, convertView, position));
+        holder.btnOption.setOnTouchListener(new EventItems(mPostedMediaItem, null, holder, convertView, position));
+
         return convertView;
     }
+
 
     @Override
     public Object[] getSections() {
@@ -170,6 +181,11 @@ public class ListViewActivityHomeAdapter extends BaseAdapter implements StickyLi
         return position + 1;
     }
 
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        return false;
+    }
+
     private class ViewHolder {
         ImageView ivPicture;
         ImageView btnLike, btnComment, btnOption, btnVideo;
@@ -183,100 +199,8 @@ public class ListViewActivityHomeAdapter extends BaseAdapter implements StickyLi
         TextView tvUsername, tvPostedTime;
     }
 
-    private class EventStickyHeaderItems implements View.OnClickListener, LinkedTextView.OnClickListener {
-        Post mPostedMediaItem;
-        ViewHeaderHolder viewHeaderHolder;
-        ViewHolder viewHolder;
-        View view;
-        int position;
 
-        public EventStickyHeaderItems(Post mPostedMediaItem, ViewHeaderHolder viewHeaderHolder, ViewHolder viewHolder, View view, int position) {
-            this.mPostedMediaItem = mPostedMediaItem;
-            this.viewHeaderHolder = viewHeaderHolder;
-            this.viewHolder = viewHolder;
-            this.view = view;
-            this.position = position;
-        }
-
-
-        // CODE tvComments EVENT
-        private void tvCommentsEvent(String link) {
-            if (link != null) {
-                // TO DO WHEN CLICK tvComments on LINK HERE
-
-                Toast.makeText(mContext, "tvComments " + position + " of user " + link + " is clicked on link", Toast.LENGTH_SHORT).show();
-            } else {
-                // TO DO WHEN CLICK tvComments on TEXVIEW HERE
-
-                Toast.makeText(mContext, "tvComments " + position + " of user " + link + " is clicked on text", Toast.LENGTH_SHORT).show();
-            }
-        }
-
-        // CODE tvCountLikes EVENT
-
-        private void tvCountLikesEvent() {
-            // TO DO WHEN CLICK tvCountLikes HERE
-
-            Toast.makeText(mContext, "tvCountLikes " + position + " of user " + mPostedMediaItem.getUserOfPost().getUserName() + " is clicked", Toast.LENGTH_SHORT).show();
-        }
-
-        // CODE btnOption EVENT
-        private void btnOptionEvent() {
-            viewHolder.btnOption.setImageAlpha(225);
-            // TO DO WHEN CLICK btnOption HERE
-
-            Toast.makeText(mContext, "btnOption " + position + " of user " + mPostedMediaItem.getUserOfPost().getUserName() + " is clicked", Toast.LENGTH_SHORT).show();
-        }
-
-        // CODE btnComment EVENT
-        private void btnCommentEvent() {
-            viewHolder.btnComment.setImageAlpha(225);
-            // TO DO WHEN CLICK btnComment HERE
-
-            Toast.makeText(mContext, "btnComment " + position + " of user " + mPostedMediaItem.getUserOfPost().getUserName() + " is clicked", Toast.LENGTH_SHORT).show();
-        }
-
-        // CODE btnAccount EVENT
-        private void btnLikeEvent() {
-            // TO DO WHEN CLICK btnLike HERE
-            // reset icon btnLike and update likeCount
-
-
-            Toast.makeText(mContext, "btnLike " + position + " of user " + mPostedMediaItem.getUserOfPost().getUserName() + " is clicked", Toast.LENGTH_SHORT).show();
-        }
-
-        // CODE btnAccount EVENT
-        private void btnAccountEvent() {
-            // TO DO WHEN CLICK btnAccount HERE
-
-            Toast.makeText(mContext, "btnAccount " + position + " of user " + mPostedMediaItem.getUserOfPost().getUserName() + " is clicked", Toast.LENGTH_SHORT).show();
-        }
-
-        @Override
-        public void onClick(View v) {
-            if (viewHeaderHolder != null) {
-                if (v == viewHeaderHolder.btnAccount) btnAccountEvent();
-            } else {
-                if (v == viewHolder.btnLike) btnLikeEvent();
-                else if (v == viewHolder.btnComment) btnCommentEvent();
-                else if (v == viewHolder.btnOption) btnOptionEvent();
-                else if (v == viewHolder.tvCountLikes) tvCountLikesEvent();
-            }
-        }
-
-        @Override
-        public void onLinkClicked(String link) {
-            tvCommentsEvent(link);
-        }
-
-        @Override
-        public void onClicked() {
-            tvCommentsEvent(null);
-        }
-    }
-
-
-    private class EventItems implements View.OnClickListener, LinkedTextView.OnClickListener {
+    private class EventItems implements View.OnClickListener, LinkedTextView.OnClickListener, View.OnTouchListener {
         Post mPostedMediaItem;
         ViewHeaderHolder viewHeaderHolder;
         ViewHolder viewHolder;
@@ -296,12 +220,34 @@ public class ListViewActivityHomeAdapter extends BaseAdapter implements StickyLi
         private void tvCommentsEvent(String link) {
             if (link != null) {
                 // TO DO WHEN CLICK tvComments on LINK HERE
-
-                Toast.makeText(mContext, "tvComments " + position + " of user " + link + " is clicked on link", Toast.LENGTH_SHORT).show();
+                String userId = mPostedMediaItem.getUserOfPost().getId();
+                for (int i = 0; i < mPostedMediaItem.getComments().size(); i++) {
+                    if (mPostedMediaItem.getComments().get(i).getUser().getUserName().equals(link)) {
+                        userId = mPostedMediaItem.getComments().get(i).getUser().getId();
+                        break;
+                    }
+                }
+                Intent iOpenUserInfoActivity = new Intent(mContext, ActivityAccount.class);
+                iOpenUserInfoActivity.putExtra("ID", userId);
+                iOpenUserInfoActivity.putExtra("PARENT", "HomeActivity");
+                iOpenUserInfoActivity.putExtra("POSITION", position);
+                View view = ActivityHomeGroup.groupHomeGroup.getLocalActivityManager().startActivity("ActivityAccount", iOpenUserInfoActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)).getDecorView();
+                ActivityHomeGroup.groupHomeGroup.replaceView(view);
+                //Toast.makeText(mContext, "tvComments " + position + " of user " + link + " is clicked on link", Toast.LENGTH_SHORT).show();
             } else {
-                // TO DO WHEN CLICK tvComments on TEXVIEW HERE
+                Intent intent = new Intent(mContext, ActivityComment.class);
+                intent.putExtra(MainActivity.PARENT, MainActivity.PARENT_HOME);
+                intent.putExtra("MEDIAID", mPostedMediaItem.getId());
+                intent.putExtra("USERNAME", mPostedMediaItem.getUserOfPost().getUserName());
+                intent.putExtra("USERID", mPostedMediaItem.getUserOfPost().getId());
+                intent.putExtra("AVATAR", mPostedMediaItem.getUserOfPost().getProfilePicture());
+                if (mPostedMediaItem.getCaptionOfPost() != null) {
+                    intent.putExtra("TEXT", mPostedMediaItem.getCaptionOfPost().getTextOfCaption());
+                    intent.putExtra("TIME", mPostedMediaItem.getCaptionOfPost().getCreatedTimeOfCaption());
+                }
+                mContext.startActivity(intent);
 
-                Toast.makeText(mContext, "tvComments " + position + " of user " + link + " is clicked on text", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(mContext, "tvComments " + position + " of user " + link + " is clicked on text", Toast.LENGTH_SHORT).show();
             }
         }
 
@@ -309,13 +255,18 @@ public class ListViewActivityHomeAdapter extends BaseAdapter implements StickyLi
 
         private void tvCountLikesEvent() {
             // TO DO WHEN CLICK tvCountLikes HERE
-
-            Toast.makeText(mContext, "tvCountLikes " + position + " of user " + mPostedMediaItem.getUserOfPost().getUserName() + " is clicked", Toast.LENGTH_SHORT).show();
+            Intent iOpenRelationship = new Intent(mContext, ActivityRelationship.class);
+            iOpenRelationship.putExtra("LABELNAME", InstagramApp.GET_LIKED_USERS);
+            iOpenRelationship.putExtra("ID", mPostedMediaItem.getId());
+            iOpenRelationship.putExtra("PARENT", "HomeActivity");
+            View view = ActivityHomeGroup.groupHomeGroup.getLocalActivityManager().startActivity("ActivityRelationship", iOpenRelationship.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)).getDecorView();
+            ActivityHomeGroup.groupHomeGroup.replaceView(view);
+            // Toast.makeText(mContext, "tvCountLikes " + position + " of user " + mPostedMediaItem.getUserOfPost().getUserName() + " is clicked", Toast.LENGTH_SHORT).show();
         }
 
         // CODE btnOption EVENT
         private void btnOptionEvent() {
-            viewHolder.btnOption.setImageAlpha(225);
+            //viewHolder.btnOption.setImageAlpha(225);
             // TO DO WHEN CLICK btnOption HERE
 
             Toast.makeText(mContext, "btnOption " + position + " of user " + mPostedMediaItem.getUserOfPost().getUserName() + " is clicked", Toast.LENGTH_SHORT).show();
@@ -323,10 +274,19 @@ public class ListViewActivityHomeAdapter extends BaseAdapter implements StickyLi
 
         // CODE btnComment EVENT
         private void btnCommentEvent() {
-            viewHolder.btnComment.setImageAlpha(225);
             // TO DO WHEN CLICK btnComment HERE
-
-            Toast.makeText(mContext, "btnComment " + position + " of user " + mPostedMediaItem.getUserOfPost().getUserName() + " is clicked", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(mContext, ActivityComment.class);
+            intent.putExtra(MainActivity.PARENT, MainActivity.PARENT_HOME);
+            intent.putExtra("MEDIAID", mPostedMediaItem.getId());
+            intent.putExtra("USERNAME", mPostedMediaItem.getUserOfPost().getUserName());
+            intent.putExtra("USERID", mPostedMediaItem.getUserOfPost().getId());
+            intent.putExtra("AVATAR", mPostedMediaItem.getUserOfPost().getProfilePicture());
+            if (mPostedMediaItem.getCaptionOfPost() != null) {
+                intent.putExtra("TEXT", mPostedMediaItem.getCaptionOfPost().getTextOfCaption());
+                intent.putExtra("TIME", mPostedMediaItem.getCaptionOfPost().getCreatedTimeOfCaption());
+            }
+            mContext.startActivity(intent);
+            //Toast.makeText(mContext, "btnComment " + position + " of user " + mPostedMediaItem.getUserOfPost().getUserName() + " is clicked", Toast.LENGTH_SHORT).show();
         }
 
         // CODE btnAccount EVENT
@@ -341,8 +301,13 @@ public class ListViewActivityHomeAdapter extends BaseAdapter implements StickyLi
         // CODE btnAccount EVENT
         private void btnAccountEvent() {
             // TO DO WHEN CLICK btnAccount HERE
-
-            Toast.makeText(mContext, "btnAccount " + position + " of user " + mPostedMediaItem.getUserOfPost().getUserName() + " is clicked", Toast.LENGTH_SHORT).show();
+            Intent iOpenUserInfoActivity = new Intent(mContext, ActivityAccount.class);
+            iOpenUserInfoActivity.putExtra("ID", mPostedMediaItem.getUserOfPost().getId());
+            iOpenUserInfoActivity.putExtra("PARENT", "HomeActivity");
+            iOpenUserInfoActivity.putExtra("POSITION", position);
+            View view = ActivityHomeGroup.groupHomeGroup.getLocalActivityManager().startActivity("ActivityAccount", iOpenUserInfoActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)).getDecorView();
+            ActivityHomeGroup.groupHomeGroup.replaceView(view);
+            //Toast.makeText(mContext, "btnAccount " + position + " of user " + mPostedMediaItem.getUserOfPost().getUserName() + " is clicked", Toast.LENGTH_SHORT).show();
         }
 
         @Override
@@ -376,6 +341,24 @@ public class ListViewActivityHomeAdapter extends BaseAdapter implements StickyLi
         @Override
         public void onClicked() {
             tvCommentsEvent(null);
+        }
+
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            if (v == viewHolder.btnOption) {
+                if (event.getAction() == MotionEvent.AXIS_PRESSURE) {
+                    viewHolder.btnOption.setImageAlpha(225);
+                } else {
+                    viewHolder.btnOption.setImageAlpha(128);
+                }
+            } else if (v == viewHolder.btnComment) {
+                if (event.getAction() == MotionEvent.AXIS_PRESSURE) {
+                    viewHolder.btnComment.setImageAlpha(225);
+                } else {
+                    viewHolder.btnComment.setImageAlpha(128);
+                }
+            }
+            return false;
         }
     }
 }

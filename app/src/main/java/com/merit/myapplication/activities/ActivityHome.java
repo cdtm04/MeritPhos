@@ -7,7 +7,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -15,6 +17,7 @@ import com.merit.myapplication.R;
 import com.merit.myapplication.instagram.ApplicationData;
 import com.merit.myapplication.instagram.InstagramApp;
 import com.merit.myapplication.models.Post;
+import com.merit.myapplication.models.User;
 import com.merit.myapplication.moduls.ListViewActivityHomeAdapter;
 
 import java.util.ArrayList;
@@ -29,8 +32,12 @@ public class ActivityHome extends Activity {
     private SwipeRefreshLayout swipeRefreshHome;
     private StickyListHeadersListView lvHome;
     ListViewActivityHomeAdapter adapter;
+    ProgressDialog mDialog;
 
     private ArrayList<Post> mNewFeeds = new ArrayList<>();
+
+    boolean mIsLoadingNewFeeds = false;
+    boolean mIsLoadingNextPageNewFeeds = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,13 +45,15 @@ public class ActivityHome extends Activity {
         setContentView(R.layout.activity_home);
 
         initialize();
-        loadNewFeeds();
+        if (!mIsLoadingNewFeeds) {
+            loadNewFeeds();
+        }
         //abc();
-
     }
 
     // init method
     private void initialize() {
+
         // init swipe refresh
         swipeRefreshHome = (SwipeRefreshLayout) findViewById(R.id.swipeRefreshHome);
         swipeRefreshHome.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -78,9 +87,35 @@ public class ActivityHome extends Activity {
         lvHome.setAreHeadersSticky(true);
         lvHome.setFastScrollEnabled(false);
         lvHome.setAdapter(adapter);
+        lvHome.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+                if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE
+                        && (lvHome.getLastVisiblePosition() - lvHome.getHeaderViewsCount() -
+                        lvHome.getFooterViewsCount()) >= (adapter.getCount() - 1)) {
+
+                    if (!mIsLoadingNextPageNewFeeds) {
+                        loadNextPageNewFeeds();
+                    }
+                }
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+
+            }
+        });
+
+
     }
 
     private void loadNewFeeds() {
+        mIsLoadingNewFeeds = true;
+        mIsLoadingNextPageNewFeeds = false;
+
+        mDialog = ProgressDialog.show(MainActivity.mainContext, "", "Loading new feeds...");
+        mDialog.setCancelable(false);
+
         InstagramApp.instagramApp.fetchNewFeeds(new Handler(new Handler.Callback() {
 
             @Override
@@ -93,9 +128,47 @@ public class ActivityHome extends Activity {
                     for (int i = 0; i < mPosts.size(); i++) mNewFeeds.add(mPosts.get(i));
 
                     adapter.notifyDataSetChanged();
-                } else {
+
+                } else if (msg.what == InstagramApp.WHAT_ERROR) {
                     Toast.makeText(MainActivity.mainContext, "Check your network.", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(MainActivity.mainContext, "Can't connect, refresh please.", Toast.LENGTH_SHORT).show();
                 }
+                mIsLoadingNewFeeds = false;
+
+                mDialog.dismiss();
+                return false;
+            }
+        }));
+    }
+
+    private void loadNextPageNewFeeds() {
+        mIsLoadingNextPageNewFeeds = true;
+
+        mDialog = ProgressDialog.show(MainActivity.mainContext, "", "Loading more...");
+        mDialog.setCancelable(false);
+
+        InstagramApp.instagramApp.fetchNextPageNewFeeds(new Handler(new Handler.Callback() {
+
+            @Override
+            public boolean handleMessage(Message msg) {
+                if (msg.what == InstagramApp.WHAT_FINALIZE) {
+                    mNewFeeds.clear();
+
+                    ArrayList<Post> mPostsmPosts = InstagramApp.instagramApp.getNewFeeds();
+
+                    for (int i = 0; i < mPostsmPosts.size(); i++)
+                        mNewFeeds.add(mPostsmPosts.get(i));
+
+                    adapter.notifyDataSetChanged();
+
+                    mIsLoadingNextPageNewFeeds = false;
+                } else {
+                    Toast.makeText(ActivityHome.this, "No more data.", Toast.LENGTH_SHORT).show();
+                    mIsLoadingNextPageNewFeeds = true;
+                }
+
+                mDialog.dismiss();
                 return false;
             }
         }));
@@ -104,7 +177,9 @@ public class ActivityHome extends Activity {
     // CODE swipeRefreshHome EVENT
     private void swipeRefreshHomeEvent() {
         // TO DO: when sliding down the swipeRefresh
-        loadNewFeeds();
+        if (!mIsLoadingNewFeeds) {
+            loadNewFeeds();
+        }
     }
 
     @Override

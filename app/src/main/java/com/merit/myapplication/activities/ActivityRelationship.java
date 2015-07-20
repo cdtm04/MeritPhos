@@ -9,6 +9,7 @@ import android.os.PersistableBundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
 import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -25,14 +26,23 @@ import java.util.ArrayList;
  * Created by merit on 7/14/2015.
  */
 public class ActivityRelationship extends Activity {
+    private String mUserId;
+    private String mParentActivity;
+    private String mMediaId;
+
     ActionBar abRelationship;
     SwipeRefreshLayout swipeRefreshRelationship;
     ListView lvRelationship;
     String labelName = "RELATIONSHIP";
-    boolean isGetFollowers;
+    String getWhat;
 
     ListViewActivityRelationshipAdapter adapter;
     private ArrayList<User> mUsers = new ArrayList<>();
+
+    private boolean mIsLoadingUsers = false;
+    private boolean mIsLoadingNextUsers = false;
+    private boolean mIsLoadingLikedUsers = false;
+    private boolean mIsLoadingNextLikedUsers = false;
 
 
     @Override
@@ -40,16 +50,31 @@ public class ActivityRelationship extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_relationship);
         initialize();
-        loadUsers();
+        if (!mIsLoadingUsers && !getWhat.equals(InstagramApp.GET_LIKED_USERS)) {
+            loadUsers();
+        } else if (getWhat.equals(InstagramApp.GET_LIKED_USERS)) {
+            loadLikedUsers();
+        }
     }
 
     private void initialize() {
-        // get label name from Activity Account
-        Intent recieveLabelName = getIntent();
-        labelName = recieveLabelName.getStringExtra("labelName");
 
-        if (labelName.equals("FOLLOWERS")) isGetFollowers = true;
-        else isGetFollowers = false;
+        Intent intent = getIntent();
+        mUserId = intent.getStringExtra("ID");
+        if (mUserId == null) {
+            mUserId = InstagramApp.instagramApp.getId();
+        }
+
+        mParentActivity = intent.getStringExtra("PARENT");
+
+        // get label name from Activity Account
+        getWhat = intent.getStringExtra("LABELNAME");
+        if (getWhat.equals(InstagramApp.GET_FOLLOWERS)) labelName = "FOLLOWERS";
+        else if (getWhat.equals(InstagramApp.GET_FOLLOWING)) labelName = "FOLLOWING";
+        else if (getWhat.equals(InstagramApp.GET_LIKED_USERS)) {
+            mMediaId = intent.getStringExtra("ID");
+            labelName = "LIKES";
+        }
 
         // init abRelationship
         abRelationship = (ActionBar) findViewById(R.id.abRelationship);
@@ -58,7 +83,7 @@ public class ActivityRelationship extends Activity {
         abRelationship.setOnActionBarListener(new ActionBar.OnActionBarListener() {
             @Override
             public void onButtonLeftClick(View v) {
-                ActivityAccountGroup.groupAccountGroup.setRootView();
+                back();
             }
 
             @Override
@@ -72,7 +97,12 @@ public class ActivityRelationship extends Activity {
         swipeRefreshRelationship.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                loadUsers();
+                if (!mIsLoadingUsers && !getWhat.equals(InstagramApp.GET_LIKED_USERS)) {
+                    loadUsers();
+                }
+                if (!mIsLoadingLikedUsers && getWhat.equals(InstagramApp.GET_LIKED_USERS)) {
+                    loadLikedUsers();
+                }
                 swipeRefreshRelationship.setRefreshing(false);// stop refreshing
             }
         });
@@ -91,7 +121,12 @@ public class ActivityRelationship extends Activity {
                 if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE
                         && (lvRelationship.getLastVisiblePosition() - lvRelationship.getHeaderViewsCount() -
                         lvRelationship.getFooterViewsCount()) >= (adapter.getCount() - 1)) {
-                    loadNextUsers();
+                    if (!mIsLoadingNextUsers && !getWhat.equals(InstagramApp.GET_LIKED_USERS)) {
+                        loadNextUsers();
+                    }
+                    if (!mIsLoadingNextLikedUsers && getWhat.equals(InstagramApp.GET_LIKED_USERS)) {
+                        loadNextLikedUsers();
+                    }
                 }
             }
 
@@ -100,9 +135,28 @@ public class ActivityRelationship extends Activity {
 
             }
         });
+
+        lvRelationship.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent iOpenUserInfoActivity = new Intent(ActivityRelationship.this, ActivityAccount.class);
+                iOpenUserInfoActivity.putExtra("ID", mUsers.get(position).getId());
+                iOpenUserInfoActivity.putExtra("PARENT", mParentActivity);
+                iOpenUserInfoActivity.putExtra("POSITION", position);
+                if (mParentActivity.equals("HomeActivity")) {
+                    View mView = ActivityHomeGroup.groupHomeGroup.getLocalActivityManager().startActivity("ActivityAccount", iOpenUserInfoActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)).getDecorView();
+                    ActivityHomeGroup.groupHomeGroup.replaceView(mView);
+                } else if (mParentActivity.equals("AccountActivity")) {
+                    View mView = ActivityAccountGroup.groupAccountGroup.getLocalActivityManager().startActivity("ActivityAccount", iOpenUserInfoActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)).getDecorView();
+                    ActivityAccountGroup.groupAccountGroup.replaceView(mView);
+                }
+            }
+        });
     }
 
     private void loadUsers() {
+        mIsLoadingUsers = true;
+        mIsLoadingNextUsers = false;
         InstagramApp.instagramApp.fetchRelationship(new Handler(new Handler.Callback() {
 
             @Override
@@ -110,23 +164,30 @@ public class ActivityRelationship extends Activity {
                 if (msg.what == InstagramApp.WHAT_FINALIZE) {
                     mUsers.clear();
 
-                    ArrayList<User> users;
-                    if (isGetFollowers) users = InstagramApp.instagramApp.getFollowers();
-                    else users = InstagramApp.instagramApp.getFollowings();
+                    ArrayList<User> users = new ArrayList<User>();
+                    if (getWhat.equals(InstagramApp.GET_FOLLOWERS))
+                        users = InstagramApp.instagramApp.getFollowers();
+                    else if (getWhat.equals(InstagramApp.GET_FOLLOWING))
+                        users = InstagramApp.instagramApp.getFollowings();
 
-                    for (int i = 0; i < users.size(); i++) mUsers.add(users.get(i));
+                    for (int i = 0; i < users.size(); i++) {
+                        mUsers.add(users.get(i));
+                    }
 
                     adapter.notifyDataSetChanged();
 
                 } else {
                     Toast.makeText(ActivityRelationship.this, "Check your network.", Toast.LENGTH_SHORT).show();
                 }
+
+                mIsLoadingUsers = false;
                 return false;
             }
-        }), isGetFollowers);
+        }), getWhat, mUserId);
     }
 
     private void loadNextUsers() {
+        mIsLoadingNextUsers = true;
         InstagramApp.instagramApp.fetchNextPageRelationship(new Handler(new Handler.Callback() {
 
             @Override
@@ -134,19 +195,88 @@ public class ActivityRelationship extends Activity {
                 if (msg.what == InstagramApp.WHAT_FINALIZE) {
                     mUsers.clear();
 
-                    ArrayList<User> users;
-                    if (isGetFollowers) users = InstagramApp.instagramApp.getFollowers();
-                    else users = InstagramApp.instagramApp.getFollowings();
+                    ArrayList<User> users = new ArrayList<User>();
+                    if (getWhat.equals(InstagramApp.GET_FOLLOWERS))
+                        users = InstagramApp.instagramApp.getFollowers();
+                    else if (getWhat.equals(InstagramApp.GET_FOLLOWING))
+                        users = InstagramApp.instagramApp.getFollowings();
 
                     for (int i = 0; i < users.size(); i++) mUsers.add(users.get(i));
 
                     adapter.notifyDataSetChanged();
+                    mIsLoadingNextUsers = false;
 
                 } else {
                     Toast.makeText(ActivityRelationship.this, "No more data.", Toast.LENGTH_SHORT).show();
+                    mIsLoadingNextUsers = true;
                 }
                 return false;
             }
-        }), isGetFollowers);
+        }), getWhat);
+    }
+
+    private void loadLikedUsers() {
+        mIsLoadingLikedUsers = true;
+        mIsLoadingNextLikedUsers = false;
+        InstagramApp.instagramApp.fetchRelationship(new Handler(new Handler.Callback() {
+
+            @Override
+            public boolean handleMessage(Message msg) {
+                if (msg.what == InstagramApp.WHAT_FINALIZE) {
+                    mUsers.clear();
+
+                    ArrayList<User> users = InstagramApp.instagramApp.getLikedUsers();
+                    for (int i = 0; i < users.size(); i++) {
+                        mUsers.add(users.get(i));
+                    }
+
+                    adapter.notifyDataSetChanged();
+
+                } else {
+                    Toast.makeText(ActivityRelationship.this, "Check your network.", Toast.LENGTH_SHORT).show();
+                }
+
+                mIsLoadingLikedUsers = false;
+                return false;
+            }
+        }), getWhat, mUserId);
+    }
+
+    private void loadNextLikedUsers() {
+        mIsLoadingNextLikedUsers = true;
+        InstagramApp.instagramApp.fetchNextPageRelationship(new Handler(new Handler.Callback() {
+
+            @Override
+            public boolean handleMessage(Message msg) {
+                if (msg.what == InstagramApp.WHAT_FINALIZE) {
+                    mUsers.clear();
+
+                    ArrayList<User> users = InstagramApp.instagramApp.getLikedUsers();
+                    for (int i = 0; i < users.size(); i++) {
+                        mUsers.add(users.get(i));
+                    }
+
+                    adapter.notifyDataSetChanged();
+                    mIsLoadingNextLikedUsers = false;
+                } else {
+                    Toast.makeText(ActivityRelationship.this, "No more data.", Toast.LENGTH_SHORT).show();
+                    mIsLoadingNextLikedUsers = true;
+                }
+                return false;
+            }
+        }), getWhat);
+    }
+
+    private void back() {
+        if (mParentActivity.startsWith("AccountActivity")) {
+            ActivityAccountGroup.groupAccountGroup.back();
+        } else if (mParentActivity.startsWith("HomeActivity")) {
+            ActivityHomeGroup.groupHomeGroup.back();
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        back();
     }
 }

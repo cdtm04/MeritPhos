@@ -14,6 +14,13 @@ import com.merit.myapplication.moduls.MainTabHost;
 
 
 public class MainActivity extends TabActivity {
+    public final static String PARENT = "PARENT";
+    public final static String PARENT_HOME = "HomeActivity";
+    public final static String PARENT_SEARCH = "SearchActivity";
+    public final static String PARENT_ACTIVITY = "ActivityActivity";
+    public final static String PARENT_ACCOUNT = "AccountActivity";
+
+
     static MainTabHost tab;
     Drawable drawables[] = new Drawable[5];
     public static ArrayList<Integer> historyTab = new ArrayList<>();

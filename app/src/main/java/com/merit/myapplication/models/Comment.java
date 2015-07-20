@@ -14,6 +14,13 @@ public class Comment {
         this.user = user;
     }
 
+    public Comment() {
+        this.id = null;
+        this.createdTime = null;
+        this.text = null;
+        this.user = null;
+    }
+
     public String getId() {
         return id;
     }

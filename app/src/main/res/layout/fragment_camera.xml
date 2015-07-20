@@ -12,20 +12,31 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="@dimen/actionbar_height"
-            android:layout_alignParentTop="true">
+            android:layout_height="wrap_content">
 
             <RelativeLayout
-                android:id="@+id/btnCloseCamera"
-                android:layout_width="@dimen/actionbar_height"
-                android:layout_height="@dimen/actionbar_height"
-                android:clickable="true"></RelativeLayout>
-        </RelativeLayout>
+                android:id="@+id/loCameraOfFragment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"></RelativeLayout>
 
-        <RelativeLayout
-            android:id="@+id/loCameraOfFragment"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/btnFlashOfFragment"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_alignBottom="@+id/loCameraOfFragment"
+                android:layout_alignParentRight="true"
+                android:clickable="true"
+                android:padding="10dp" />
+
+            <ImageView
+                android:id="@+id/btnSwitchOfFragment"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_alignBottom="@+id/loCameraOfFragment"
+                android:layout_alignParentLeft="true"
+                android:clickable="true"
+                android:padding="10dp" />
+
         </RelativeLayout>
 
         <RelativeLayout

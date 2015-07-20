@@ -8,6 +8,7 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Created by merit on 16/07/2015.
@@ -17,12 +18,16 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback {
     private Camera mCamera;
     private Context mContext;
 
-    public CameraView(Context context, Camera camera) {
+    public CameraView(Context context, Camera camera, int sizeOfCamera) {
         super(context);
 
         mContext = context;
         mCamera = camera;
         mCamera.setDisplayOrientation(90);
+
+        Camera.Parameters parameters = mCamera.getParameters();
+        parameters.setPreviewSize(sizeOfCamera, sizeOfCamera);
+        mCamera.setParameters(parameters);
 
         //get the holder and set this class as the callback, so we can get camera data here
         mHolder = getHolder();
@@ -56,6 +61,7 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback {
 
         //now, recreate the camera preview
         try {
+
             mCamera.setPreviewDisplay(mHolder);
             mCamera.startPreview();
         } catch (IOException e) {

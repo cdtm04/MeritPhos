@@ -1,39 +1,33 @@
 package com.merit.myapplication.activities;
 
-import android.app.Activity;
-import android.content.Context;
+import android.annotation.SuppressLint;
 import android.graphics.Color;
-import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.hardware.Camera;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.merit.myapplication.R;
+import com.merit.myapplication.models.Image;
 import com.merit.myapplication.moduls.ActionBar;
 import com.merit.myapplication.moduls.CameraView;
 import com.merit.myapplication.moduls.SlidingTabLayout;
 import com.merit.myapplication.moduls.ViewPagerAdapter;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 
@@ -44,10 +38,13 @@ public class ActivityCamera extends FragmentActivity {
     ActionBar abCamera;
     ImageView btnCamera;
     ArrayList<Fragment> fragments;
-    FrameLayout loCamera;
+    RelativeLayout loCamera;
+    ImageView btnFlash, btnSwitch;
 
     private Camera mCamera = null;
     private CameraView mCameraView = null;
+    private int screenWidth;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,22 +55,29 @@ public class ActivityCamera extends FragmentActivity {
 
     private void initialize() {
         // init layout camera's width and height
-        loCamera = (FrameLayout) findViewById(R.id.loCamera);
+        loCamera = (RelativeLayout) findViewById(R.id.loCamera);
+        // get window size
         Display display = getWindowManager().getDefaultDisplay();
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(display.getWidth(), display.getWidth());
+        screenWidth = display.getWidth();
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(screenWidth, screenWidth);
+
+        // set size loCamera fit window
         loCamera.setLayoutParams(params);
         try {
             mCamera = Camera.open();
-            Camera.Size size = mCamera.new Size(display.getWidth(), display.getWidth());
         } catch (Exception e) {
+            Toast.makeText(this, "Failed to get camera: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             Log.d("ERROR", "Failed to get camera: " + e.getMessage());
         }
 
         if (mCamera != null) {
-            mCameraView = new CameraView(this, mCamera);//create a SurfaceView to show camera data
+            mCameraView = new CameraView(this, mCamera, screenWidth);//create a SurfaceView to show camera data
             loCamera.addView(mCameraView);//add the SurfaceView to the layout
         }
 
+
+        btnSwitch = (ImageView) findViewById(R.id.btnSwitch);
+        btnFlash = (ImageView) findViewById(R.id.btnFlash);
 
         // init actionbar
         abCamera = (ActionBar) findViewById(R.id.abCamera);
@@ -81,6 +85,17 @@ public class ActivityCamera extends FragmentActivity {
         abCamera.setButtonRightEnabled(false);
         abCamera.setCameraTheme(true);
         abCamera.setButtonLeftIcon(getResources().getDrawable(R.drawable.icon_close));
+        abCamera.setOnActionBarListener(new ActionBar.OnActionBarListener() {
+            @Override
+            public void onButtonLeftClick(View v) {
+                finish();
+            }
+
+            @Override
+            public void onButtonRightClick(View v) {
+
+            }
+        });
 
 
         pager = (ViewPager) findViewById(R.id.pager);
@@ -134,9 +149,10 @@ public class ActivityCamera extends FragmentActivity {
         });
     }
 
-    private class FragmentCamera extends Fragment implements View.OnTouchListener {
-        RelativeLayout btnCloseCamera, loCameraOfFragment;
-        ImageView btnCameraOfFragment;
+    @SuppressLint("ValidFragment")
+    public class FragmentCamera extends Fragment implements View.OnTouchListener {
+        RelativeLayout loCameraOfFragment;
+        ImageView btnCameraOfFragment, btnFlashOfFragment, btnSwitchOfFragment;
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -146,18 +162,18 @@ public class ActivityCamera extends FragmentActivity {
         }
 
         private void initializeFragmentCamera(View v) {
-            btnCloseCamera = (RelativeLayout) v.findViewById(R.id.btnCloseCamera);
             loCameraOfFragment = (RelativeLayout) v.findViewById(R.id.loCameraOfFragment);
             btnCameraOfFragment = (ImageView) v.findViewById(R.id.btnCameraOfFragment);
+            btnFlashOfFragment = (ImageView) v.findViewById(R.id.btnFlashOfFragment);
+            btnSwitchOfFragment = (ImageView) v.findViewById(R.id.btnSwitchOfFragment);
 
             // set height & width for loCameraOfFragment
             Display display = getWindowManager().getDefaultDisplay();
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(display.getWidth(), display.getWidth());
+            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(display.getWidth(), display.getWidth());
             loCameraOfFragment.setLayoutParams(params);
 
-            btnCloseCamera.setOnTouchListener(this);
             btnCameraOfFragment.setOnTouchListener(this);
-            btnCloseCamera.setOnTouchListener(this);
+            btnSwitchOfFragment.setOnTouchListener(this);
         }
 
         @Override
@@ -178,13 +194,6 @@ public class ActivityCamera extends FragmentActivity {
                     drawable.setAlpha(255);
                 }
                 btnCamera.setImageDrawable(drawable);
-            } else if (v == btnCloseCamera) {
-                if (event.getAction() == MotionEvent.AXIS_PRESSURE) {
-                    abCamera.getButtonLeft().setBackgroundColor(getResources().getColor(R.color.themecamera_pressed));
-                } else if (event.getAction() == MotionEvent.ACTION_UP) {
-                    abCamera.getButtonLeft().setBackgroundColor(getResources().getColor(R.color.themecamera));
-                    finish();
-                }
             }
             return false;
         }

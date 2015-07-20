@@ -2,16 +2,14 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/selector_press_backgroundcolor_button"
-    android:clickable="true"
-    android:orientation="vertical">
+    android:background="@drawable/selector_press_backgroundcolor_button">
 
     <RelativeLayout
+        android:id="@+id/relative"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="12dp"
         android:layout_marginRight="12dp"
-        android:background="@drawable/shape_underline"
         android:paddingBottom="10dp"
         android:paddingTop="10dp">
 
@@ -22,30 +20,25 @@
             android:layout_centerVertical="true"
             android:src="@drawable/picture" />
 
-        <RelativeLayout
+
+        <TextView
+            android:id="@+id/tvContent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_toLeftOf="@+id/ivButton"
+            android:layout_margin="10dp"
             android:layout_toRightOf="@+id/ivAvatar"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp">
+            android:text="ash started following you. 1h"
+            android:textColor="#000000" />
 
-            <TextView
-                android:id="@+id/tvContent"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="ash started following you. 1h" />
-        </RelativeLayout>
-
-
-        <ImageView
-            android:id="@+id/btnFollow"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerInParent="true"
-            android:background="@drawable/button_follow_long"
-            android:clickable="true" />
     </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/separator"
+        android:layout_width="wrap_content"
+        android:layout_height="0.5dp"
+        android:layout_alignLeft="@+id/relative"
+        android:layout_alignRight="@+id/relative"
+        android:layout_below="@+id/relative"
+        android:background="#60c9cbca"></RelativeLayout>
 </RelativeLayout>
